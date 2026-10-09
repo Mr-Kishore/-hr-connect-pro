@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../data/candidate_repository.dart';
 import '../../domain/models/candidate_profile.dart';
 import '../../domain/models/job_opportunity.dart';
@@ -47,16 +48,19 @@ class CandidateProfileNotifier extends Notifier<CandidateProfile?> {
   }
 }
 
-final candidateProfileProvider = NotifierProvider<CandidateProfileNotifier, CandidateProfile?>(() {
-  return CandidateProfileNotifier();
-});
+final candidateProfileProvider =
+    NotifierProvider<CandidateProfileNotifier, CandidateProfile?>(() {
+      return CandidateProfileNotifier();
+    });
 
 final matchedJobsProvider = FutureProvider<List<JobOpportunity>>((ref) async {
   final repo = ref.read(candidateRepositoryProvider);
   return await repo.getMatchedJobs();
 });
 
-final recommendedCoursesProvider = FutureProvider<List<RecommendedCourse>>((ref) async {
+final recommendedCoursesProvider = FutureProvider<List<RecommendedCourse>>((
+  ref,
+) async {
   final repo = ref.read(candidateRepositoryProvider);
   return await repo.getRecommendedCourses();
 });
@@ -71,22 +75,25 @@ class ChatStateNotifier extends Notifier<Map<String, List<ChatMessage>>> {
   Map<String, List<ChatMessage>> build() {
     final repo = ref.read(candidateRepositoryProvider);
     return {
-      'men_01': repo.getChatHistory('men_01'),
+      'men_01': List<ChatMessage>.unmodifiable(repo.getChatHistory('men_01')),
     };
   }
 
   Future<void> sendMessage(String mentorId, String text) async {
     if (text.trim().isEmpty) return;
     final repo = ref.read(candidateRepositoryProvider);
-    final newMsg = await repo.sendChatMessage(mentorId: mentorId, text: text.trim());
-    final current = state[mentorId] ?? repo.getChatHistory(mentorId);
+    await repo.sendChatMessage(mentorId: mentorId, text: text.trim());
+    // The repository already stored the message, so take a fresh copy of its
+    // history. Appending to a list shared with the repository showed the first
+    // message to each mentor twice.
     state = {
       ...state,
-      mentorId: [...current, newMsg],
+      mentorId: List<ChatMessage>.unmodifiable(repo.getChatHistory(mentorId)),
     };
   }
 }
 
-final chatStateProvider = NotifierProvider<ChatStateNotifier, Map<String, List<ChatMessage>>>(() {
-  return ChatStateNotifier();
-});
+final chatStateProvider =
+    NotifierProvider<ChatStateNotifier, Map<String, List<ChatMessage>>>(() {
+      return ChatStateNotifier();
+    });

@@ -13,7 +13,7 @@ class RouteConstants {
   static const String profile = '/profile';
 
   // Details & Flows
-  static const String jobDetail = '/jobs/:id';
+  static const String jobDetail = '/job-detail';
   static const String jobMatch = '/jobs/:id/match';
   static const String bookInterviewSlot = '/jobs/:id/book';
 

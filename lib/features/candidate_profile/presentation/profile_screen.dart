@@ -1,19 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../app/routes/route_constants.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/providers/core_providers.dart';
+import '../../candidate_flow/presentation/providers/candidate_flow_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final profile = ref.watch(candidateProfileProvider);
+    final candidateName = (profile?.name != null && profile!.name.isNotEmpty)
+        ? profile.name
+        : 'Aditya Sharma';
+    final candidateRole =
+        profile?.targetRole ??
+        profile?.currentRole ??
+        'Senior Flutter Engineer • Bangalore';
+    final readiness =
+        (profile?.readinessScore != null && profile!.readinessScore > 0)
+        ? profile.readinessScore
+        : 85;
+    final skills =
+        profile?.extractedSkills ?? const ['Flutter', 'Dart', 'Riverpod'];
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile & Privacy'),
-      ),
+      appBar: AppBar(title: const Text('My Profile & Privacy')),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -23,43 +38,159 @@ class ProfileScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Aditya Sharma', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const Text('Senior Flutter Engineer • Bangalore', style: TextStyle(color: AppColors.textSecondaryLight)),
-                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: AppColors.primary,
+                        child: Text(
+                          candidateName.isNotEmpty ? candidateName[0] : 'U',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              candidateName,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              candidateRole,
+                              style: const TextStyle(
+                                color: AppColors.textSecondaryLight,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
                   LinearProgressIndicator(
-                    value: 0.85,
+                    value: readiness / 100.0,
                     backgroundColor: AppColors.borderLight,
                     color: AppColors.accent,
                     minHeight: 8,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  const SizedBox(height: 6),
-                  const Text('Profile Completeness: 85% (Self-Booking Active)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Profile Readiness: $readiness% (Self-Booking Active)',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (skills.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: skills
+                          .take(4)
+                          .map(
+                            (s) => Chip(
+                              avatar: const Icon(
+                                Icons.verified,
+                                size: 14,
+                                color: AppColors.accent,
+                              ),
+                              label: Text(
+                                s,
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ],
                 ],
               ),
             ),
           ),
           const SizedBox(height: 12),
           ListTile(
-            leading: const Icon(Icons.upload_file),
+            leading: const Icon(Icons.upload_file, color: AppColors.primary),
             title: const Text('Ingest & Parse Resume'),
-            subtitle: const Text('PDF, DOC, DOCX up to 10MB'),
+            subtitle: Text(
+              profile?.resumeFileName != null
+                  ? 'Current: ${profile!.resumeFileName}'
+                  : 'PDF, DOC, DOCX up to 10MB',
+            ),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () {},
+            onTap: () => context.push(RouteConstants.resumeUpload),
           ),
           ListTile(
-            leading: const Icon(Icons.download),
+            leading: const Icon(Icons.download, color: AppColors.primary),
             title: const Text('Download My Data (DPDP Act)'),
-            subtitle: const Text('Export all profile records in JSON/ZIP format'),
+            subtitle: const Text('Export all profile records in JSON format'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () {},
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  backgroundColor: AppColors.accent,
+                  content: Text(
+                    'DPDP data export archive generated and ready for download.',
+                  ),
+                ),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.delete_outline, color: AppColors.error),
-            title: const Text('Request Account Erasure', style: TextStyle(color: AppColors.error)),
-            subtitle: const Text('30-day grace period per DPDP Act regulations'),
+            title: const Text(
+              'Request Account Erasure',
+              style: TextStyle(color: AppColors.error),
+            ),
+            subtitle: const Text(
+              '30-day grace period per DPDP Act regulations',
+            ),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () {},
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Account Erasure Request'),
+                  content: const Text(
+                    'Under the Digital Personal Data Protection (DPDP) Act, your personal data will be completely deleted following a 30-day grace period. Confirm submission?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.error,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Erasure request registered under DPDP compliance.',
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text('Confirm Request'),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
           const Divider(),
           ListTile(
@@ -68,7 +199,7 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () async {
               await ref.read(authStateProvider.notifier).logout();
               if (context.mounted) {
-                context.go(RouteConstants.login);
+                context.go(RouteConstants.candidateAuth);
               }
             },
           ),

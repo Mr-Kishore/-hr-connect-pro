@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import '../domain/models/candidate_profile.dart';
 import '../domain/models/job_opportunity.dart';
 import '../domain/models/recommended_course.dart';
@@ -32,7 +33,14 @@ class MockCandidateRepository implements CandidateRepository {
       name: 'Aditya Sharma',
       currentRole: 'Junior Flutter Developer',
       targetRole: 'Senior Mobile Engineer',
-      extractedSkills: ['Flutter', 'Dart', 'Riverpod', 'REST APIs', 'Git', 'Firebase'],
+      extractedSkills: [
+        'Flutter',
+        'Dart',
+        'Riverpod',
+        'REST APIs',
+        'Git',
+        'Firebase',
+      ],
       readinessScore: 82,
       resumeFileName: 'Aditya_Sharma_Resume.pdf',
       onboardingCompleted: true,
@@ -103,11 +111,18 @@ class MockCandidateRepository implements CandidateRepository {
       'SQLite',
     ];
 
-    _currentProfile = (_currentProfile ?? const CandidateProfile(id: 'temp', phone: '', name: 'Candidate')).copyWith(
-      resumeFileName: fileName,
-      extractedSkills: extracted,
-      readinessScore: 45, // Endowed progress score jump
-    );
+    _currentProfile =
+        (_currentProfile ??
+                const CandidateProfile(
+                  id: 'temp',
+                  phone: '',
+                  name: 'Candidate',
+                ))
+            .copyWith(
+              resumeFileName: fileName,
+              extractedSkills: extracted,
+              readinessScore: 45, // Endowed progress score jump
+            );
 
     return _currentProfile!;
   }
@@ -119,12 +134,20 @@ class MockCandidateRepository implements CandidateRepository {
   }) async {
     await Future.delayed(const Duration(milliseconds: 300));
 
-    _currentProfile = (_currentProfile ?? const CandidateProfile(id: 'temp', phone: '', name: 'Candidate')).copyWith(
-      currentRole: currentRole,
-      targetRole: targetRole,
-      readinessScore: 78, // Progress advances as profile gains role alignment
-      onboardingCompleted: true,
-    );
+    _currentProfile =
+        (_currentProfile ??
+                const CandidateProfile(
+                  id: 'temp',
+                  phone: '',
+                  name: 'Candidate',
+                ))
+            .copyWith(
+              currentRole: currentRole,
+              targetRole: targetRole,
+              readinessScore:
+                  78, // Progress advances as profile gains role alignment
+              onboardingCompleted: true,
+            );
 
     return _currentProfile!;
   }
@@ -140,7 +163,12 @@ class MockCandidateRepository implements CandidateRepository {
         location: 'Bengaluru (Hybrid)',
         salaryRange: '₹22 - 30 LPA',
         fitScore: 84,
-        matchedSkills: ['Flutter', 'Dart', 'State Management', 'Clean Architecture'],
+        matchedSkills: [
+          'Flutter',
+          'Dart',
+          'State Management',
+          'Clean Architecture',
+        ],
         missingSkills: ['GraphQL', 'CI/CD Pipelines'],
         description: 'Lead mobile development for high-throughput payment SDKs and checkout flows.',
         portalUrl: 'https://razorpay.com/careers/mobile-lead',
@@ -155,7 +183,10 @@ class MockCandidateRepository implements CandidateRepository {
         salaryRange: '₹28 - 38 LPA',
         fitScore: 79,
         matchedSkills: ['Flutter', 'RESTful APIs', 'Git', 'Clean Architecture'],
-        missingSkills: ['Automated Testing (Widget/Integration)', 'Kotlin Native Interop'],
+        missingSkills: [
+          'Automated Testing (Widget/Integration)',
+          'Kotlin Native Interop',
+        ],
         description: 'Architect customer-facing catalog experiences with fluid 60fps micro-animations.',
         portalUrl: 'https://flipkartcareers.com/job/lead-mobile',
         isDirectApply: false,
@@ -228,7 +259,11 @@ class MockCandidateRepository implements CandidateRepository {
         rating: 4.9,
         totalMentees: 74,
         hourlyRateInr: 1500,
-        expertise: ['System Architecture', 'Senior SDE Interviews', 'Code Reviews'],
+        expertise: [
+          'System Architecture',
+          'Senior SDE Interviews',
+          'Code Reviews',
+        ],
         isAvailableNow: true,
       ),
       MentorProfile(
@@ -240,7 +275,11 @@ class MockCandidateRepository implements CandidateRepository {
         rating: 4.85,
         totalMentees: 92,
         hourlyRateInr: 1800,
-        expertise: ['Leadership Rounds', 'Hiring Manager Mock', 'Salary Negotiation'],
+        expertise: [
+          'Leadership Rounds',
+          'Hiring Manager Mock',
+          'Salary Negotiation',
+        ],
         isAvailableNow: false,
       ),
       MentorProfile(
@@ -252,7 +291,11 @@ class MockCandidateRepository implements CandidateRepository {
         rating: 4.95,
         totalMentees: 58,
         hourlyRateInr: 1400,
-        expertise: ['Flutter Performance', 'SDK Security', 'Mock Technical Rounds'],
+        expertise: [
+          'Flutter Performance',
+          'SDK Security',
+          'Mock Technical Rounds',
+        ],
         isAvailableNow: true,
       ),
     ];
@@ -266,17 +309,30 @@ class MockCandidateRepository implements CandidateRepository {
     await Future.delayed(const Duration(milliseconds: 150));
 
     // ACTIVE PII & CONTACT LEAK DEFENSE FILTER
-    // Regex matching phone numbers (10 digits, with optional country code or separators)
-    final phoneRegex = RegExp(r'(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}');
-    // Regex matching email addresses
-    final emailRegex = RegExp(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}');
-    // Regex matching external handles/URLs (linkedin, telegram, wa.me, etc.)
-    final linkRegex = RegExp(r'(wa\.me|t\.me|linkedin\.com|instagram\.com|github\.com|[a-zA-Z0-9-]+\.(com|in|org|net|me|io))', caseSensitive: false);
+    // Comprehensive protection against off-platform disintermediation & sensitive data exposure (OWASP / MSTG)
+    // 1. Phone numbers: 10 digits with optional country code (+91), spaces, dashes, dots, or parentheses (including spaced evasions)
+    final phoneRegex = RegExp(
+      r'(?:\+?91[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}|\b(?:\d[\s.-]?){9}\d\b|\b\d{5}[\s.-]?\d{5}\b)',
+    );
+
+    // 2. Email addresses: standard (user@domain.com) and bracketed obfuscations (user [at] domain [dot] com, user(at)domain(dot)com)
+    final emailRegex = RegExp(
+      r'[a-zA-Z0-9._%+-]+(?:\s*@\s*|\s*\[at\]\s*|\s*\(at\)\s*)[a-zA-Z0-9.-]+(?:\s*\.\s*|\s*\[dot\]\s*|\s*\(dot\)\s*)[a-zA-Z]{2,}',
+      caseSensitive: false,
+    );
+
+    // 3. External links, messaging handles, video conferencing, calendaring, and URL paths
+    final linkRegex = RegExp(
+      r'(?:https?:\/\/[^\s]+|wa\.me\/?[^\s]*|t\.me\/?[^\s]*|telegram\.me\/?[^\s]*|discord\.gg\/?[^\s]*|(?:[a-zA-Z0-9-]+\.)+(?:com|in|org|net|me|io|co|ai|app|dev)(?:\/[^\s]*)?)\b',
+      caseSensitive: false,
+    );
 
     bool containsLeak = false;
     String sanitizedText = text;
 
-    if (phoneRegex.hasMatch(text) || emailRegex.hasMatch(text) || linkRegex.hasMatch(text)) {
+    if (phoneRegex.hasMatch(text) ||
+        emailRegex.hasMatch(text) ||
+        linkRegex.hasMatch(text)) {
       containsLeak = true;
       sanitizedText = sanitizedText
           .replaceAll(phoneRegex, '[Phone Number Redacted]')

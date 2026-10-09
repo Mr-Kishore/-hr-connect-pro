@@ -1,14 +1,10 @@
 import 'dart:io' show Platform, File;
+
 import 'package:flutter/foundation.dart';
+
 import '../errors/app_exception.dart';
 
-enum DeviceRiskLevel {
-  none,
-  low,
-  medium,
-  high,
-  critical,
-}
+enum DeviceRiskLevel { none, low, medium, high, critical }
 
 class DeviceSecurityAssessment {
   final bool isCompromised;
@@ -46,11 +42,13 @@ typedef FileExistenceChecker = bool Function(String path);
 
 class DeviceSecurityService {
   final FileExistenceChecker _fileChecker;
-  final bool Function()? _debuggerChecker;
+  final bool Function()? debuggerChecker;
+  final TargetPlatform? platformOverride;
 
   DeviceSecurityService({
     FileExistenceChecker? fileChecker,
-    this._debuggerChecker,
+    this.debuggerChecker,
+    this.platformOverride,
   }) : _fileChecker = fileChecker ?? _defaultFileChecker;
 
   static bool _defaultFileChecker(String path) {
@@ -62,7 +60,7 @@ class DeviceSecurityService {
     }
   }
 
-  /// Android root indicator paths (su binaries, root management apps)
+  /// Android root indicator paths (su binaries, root management apps, KernelSU, APatch)
   static const List<String> androidSuPaths = [
     '/system/bin/su',
     '/system/xbin/su',
@@ -74,35 +72,52 @@ class DeviceSecurityService {
     '/data/local/su',
     '/su/bin/su',
     '/su/xbin/su',
+    '/system/bin/.su',
+    '/system/xbin/daemonsu',
+    '/system/etc/init.d/99SuperSUDaemon',
+    '/system/xbin/busybox',
+    '/data/adb/magisk',
+    '/data/adb/ksu',
+    '/data/adb/ap',
   ];
 
   static const List<String> androidRootAppPaths = [
     '/system/app/Superuser.apk',
     '/system/app/SuperSU.apk',
     '/system/app/Magisk.apk',
+    '/system/app/Kinguser.apk',
     '/data/data/com.topjohnwu.magisk',
     '/data/data/eu.chainfire.supersu',
     '/data/data/com.noshufou.android.su',
+    '/data/data/com.koushikdutta.superuser',
+    '/data/data/com.kingroot.kinguser',
+    '/data/data/com.kingo.root',
   ];
 
-  /// iOS Jailbreak indicator paths (Cydia, Substrate, SSH, APT)
+  /// iOS Jailbreak indicator paths (Cydia, Substrate, Sileo, Rootless /var/jb)
   static const List<String> iosJailbreakPaths = [
     '/Applications/Cydia.app',
     '/Applications/Sileo.app',
     '/Applications/Zebra.app',
     '/Library/MobileSubstrate/MobileSubstrate.dylib',
+    '/Library/PreferenceBundles/SubstitutePrefs.bundle',
+    '/usr/lib/libsubstitute.dylib',
     '/bin/bash',
     '/usr/sbin/sshd',
     '/etc/apt',
     '/usr/bin/ssh',
     '/private/var/lib/apt/',
     '/private/var/lib/cydia/',
+    '/var/jb',
+    '/var/binpack',
+    '/private/var/stash',
+    '/var/lib/cydia',
   ];
 
   /// Performs a comprehensive scan of device integrity.
   Future<DeviceSecurityAssessment> assessIntegrity() async {
     // Web environments operate inside the browser sandbox
-    if (kIsWeb) {
+    if (kIsWeb && platformOverride == null) {
       return DeviceSecurityAssessment.clean();
     }
 
@@ -112,38 +127,43 @@ class DeviceSecurityService {
     bool isDebuggerAttached = false;
 
     // Check debugger status
-    if (_debuggerChecker != null && _debuggerChecker()) {
+    if (debuggerChecker != null && debuggerChecker!()) {
       isDebuggerAttached = true;
       threats.add('DEBUGGER_ATTACHED');
-    } else if (kDebugMode) {
+    } else if (kDebugMode && platformOverride == null) {
       // In flutter debug mode, debugger is expected; note as low risk informational only
     }
 
     // Platform-specific file checks
-    if (!kIsWeb) {
-      if (Platform.isAndroid) {
-        for (final suPath in androidSuPaths) {
-          if (_fileChecker(suPath)) {
-            isRooted = true;
-            threats.add('ANDROID_SU_BINARY_FOUND: $suPath');
-            break;
-          }
-        }
+    final isAndroid =
+        platformOverride == TargetPlatform.android ||
+        (platformOverride == null && !kIsWeb && Platform.isAndroid);
+    final isIOS =
+        platformOverride == TargetPlatform.iOS ||
+        (platformOverride == null && !kIsWeb && Platform.isIOS);
 
-        for (final appPath in androidRootAppPaths) {
-          if (_fileChecker(appPath)) {
-            isRooted = true;
-            threats.add('ANDROID_ROOT_MANAGER_FOUND: $appPath');
-            break;
-          }
+    if (isAndroid) {
+      for (final suPath in androidSuPaths) {
+        if (_fileChecker(suPath)) {
+          isRooted = true;
+          threats.add('ANDROID_SU_BINARY_FOUND: $suPath');
+          break;
         }
-      } else if (Platform.isIOS) {
-        for (final jbPath in iosJailbreakPaths) {
-          if (_fileChecker(jbPath)) {
-            isJailbroken = true;
-            threats.add('IOS_JAILBREAK_FILE_FOUND: $jbPath');
-            break;
-          }
+      }
+
+      for (final appPath in androidRootAppPaths) {
+        if (_fileChecker(appPath)) {
+          isRooted = true;
+          threats.add('ANDROID_ROOT_MANAGER_FOUND: $appPath');
+          break;
+        }
+      }
+    } else if (isIOS) {
+      for (final jbPath in iosJailbreakPaths) {
+        if (_fileChecker(jbPath)) {
+          isJailbroken = true;
+          threats.add('IOS_JAILBREAK_FILE_FOUND: $jbPath');
+          break;
         }
       }
     }
@@ -158,7 +178,8 @@ class DeviceSecurityService {
       risk = DeviceRiskLevel.medium;
     }
 
-    final isCompromised = risk == DeviceRiskLevel.critical || risk == DeviceRiskLevel.high;
+    final isCompromised =
+        risk == DeviceRiskLevel.critical || risk == DeviceRiskLevel.high;
 
     return DeviceSecurityAssessment(
       isCompromised: isCompromised,
@@ -177,7 +198,8 @@ class DeviceSecurityService {
     if (assessment.isCompromised && blockOnHighRisk) {
       throw DeviceCompromisedException(
         detectedThreats: assessment.detectedThreats,
-        message: 'Application execution blocked: Unauthorized device tampering detected '
+        message:
+            'Application execution blocked: Unauthorized device tampering detected '
             '(${assessment.detectedThreats.join(', ')}).',
       );
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../app/routes/route_constants.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/job_opportunity.dart';
@@ -28,7 +29,7 @@ class StudentDashboardScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.people_outline_rounded),
             tooltip: 'Industry Mentors',
-            onPressed: () => context.push('/mentor-connect'),
+            onPressed: () => context.push(RouteConstants.mentorConnect),
           ),
           IconButton(
             icon: const Icon(Icons.psychology_outlined),
@@ -91,7 +92,10 @@ class StudentDashboardScreen extends ConsumerWidget {
                       ),
                       // Circular Readiness Meter
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.accent.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
@@ -113,7 +117,11 @@ class StudentDashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.verified_outlined, color: Color(0xFF38BDF8), size: 16),
+                      const Icon(
+                        Icons.verified_outlined,
+                        color: Color(0xFF38BDF8),
+                        size: 16,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -131,10 +139,14 @@ class StudentDashboardScreen extends ConsumerWidget {
                           minimumSize: const Size(50, 24),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        onPressed: () => context.go('/resume-upload'),
+                        onPressed: () =>
+                            context.go(RouteConstants.resumeUpload),
                         child: const Text(
                           'Update',
-                          style: TextStyle(color: Color(0xFF38BDF8), fontSize: 12),
+                          style: TextStyle(
+                            color: Color(0xFF38BDF8),
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -162,7 +174,11 @@ class StudentDashboardScreen extends ConsumerWidget {
                       color: const Color(0xFFEFF6FF),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.handshake_outlined, color: AppColors.primary, size: 20),
+                    child: const Icon(
+                      Icons.handshake_outlined,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   const Expanded(
@@ -180,18 +196,27 @@ class StudentDashboardScreen extends ConsumerWidget {
                         SizedBox(height: 2),
                         Text(
                           '1:1 Encrypted technical chat and in-app video prep sessions.',
-                          style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondaryLight,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       minimumSize: const Size(60, 32),
                     ),
-                    onPressed: () => context.push('/mentor-connect'),
-                    child: const Text('Explore', style: TextStyle(fontSize: 12)),
+                    onPressed: () => context.push(RouteConstants.mentorConnect),
+                    child: const Text(
+                      'Explore',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
                 ],
               ),
@@ -214,7 +239,10 @@ class StudentDashboardScreen extends ConsumerWidget {
                 ),
                 Text(
                   'Recommended Modules',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondaryLight,
+                  ),
                 ),
               ],
             ),
@@ -256,7 +284,10 @@ class StudentDashboardScreen extends ConsumerWidget {
                 ),
                 Text(
                   'Aggregated Feed',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondaryLight,
+                  ),
                 ),
               ],
             ),
@@ -319,11 +350,18 @@ class StudentDashboardScreen extends ConsumerWidget {
               ),
               Row(
                 children: [
-                  const Icon(Icons.star_rounded, size: 14, color: Color(0xFFF59E0B)),
+                  const Icon(
+                    Icons.star_rounded,
+                    size: 14,
+                    color: Color(0xFFF59E0B),
+                  ),
                   const SizedBox(width: 3),
                   Text(
                     '${course.rating}',
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -352,7 +390,10 @@ class StudentDashboardScreen extends ConsumerWidget {
               ),
               Text(
                 course.duration,
-                style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondaryLight,
+                ),
               ),
             ],
           ),
@@ -363,7 +404,7 @@ class StudentDashboardScreen extends ConsumerWidget {
 
   Widget _buildJobCard(BuildContext context, JobOpportunity job, int index) {
     return InkWell(
-      onTap: () => context.push('/job-detail', extra: job),
+      onTap: () => context.push(RouteConstants.jobDetail, extra: job),
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -394,13 +435,19 @@ class StudentDashboardScreen extends ConsumerWidget {
                       const SizedBox(height: 2),
                       Text(
                         '${job.company} • ${job.location}',
-                        style: const TextStyle(fontSize: 13, color: AppColors.textSecondaryLight),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondaryLight,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF0FDF4),
                     borderRadius: BorderRadius.circular(16),
@@ -421,7 +468,10 @@ class StudentDashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(6),
@@ -438,7 +488,10 @@ class StudentDashboardScreen extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Text(
                   '${job.matchedSkills.length} matched / ${job.missingSkills.length} missing',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondaryLight,
+                  ),
                 ),
               ],
             ),

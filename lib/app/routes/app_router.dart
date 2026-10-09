@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/providers/core_providers.dart';
 import '../../features/authentication/presentation/login_screen.dart';
+import '../../features/candidate_flow/presentation/providers/candidate_flow_providers.dart';
 import '../../features/candidate_flow/presentation/screens/auth_screen.dart';
 import '../../features/candidate_flow/presentation/screens/resume_upload_screen.dart';
 import '../../features/candidate_flow/presentation/screens/role_intent_screen.dart';
@@ -22,25 +24,43 @@ import 'main_shell.dart';
 import 'route_constants.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _shellNavigatorKey =
+    GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateProvider);
+  // Build the router once. Watching authStateProvider here used to create a
+  // new GoRouter on every login/logout, which reset navigation to
+  // initialLocation and ran redirects against stale auth state. Auth changes
+  // now re-run the redirect on this same router via refreshListenable.
+  final authRefresh = ValueNotifier<AuthState>(ref.read(authStateProvider));
+  ref.listen<AuthState>(
+    authStateProvider,
+    (_, next) => authRefresh.value = next,
+  );
 
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: RouteConstants.candidateAuth,
+    refreshListenable: authRefresh,
     redirect: (BuildContext context, GoRouterState state) {
+      final authState = ref.read(authStateProvider);
       if (authState.isLoading) return null;
 
-      final isAuthFlow = state.uri.path == RouteConstants.login ||
-          state.uri.path == RouteConstants.candidateAuth ||
-          state.uri.path == RouteConstants.resumeUpload ||
-          state.uri.path == RouteConstants.roleIntent;
+      final path = state.uri.path;
+      final isSignInRoute =
+          path == RouteConstants.candidateAuth || path == RouteConstants.login;
 
-      // Allow freely navigating during development and client preview
-      if (!authState.isAuthenticated && !isAuthFlow) {
-        return RouteConstants.candidateAuth;
+      // Signed-out users can only reach the sign-in screens.
+      if (!authState.isAuthenticated) {
+        return isSignInRoute ? null : RouteConstants.candidateAuth;
+      }
+
+      // Signed-in users skip the sign-in screens, unless they're still
+      // onboarding (the resume upload screen's back button returns to /auth).
+      if (isSignInRoute) {
+        final profile = ref.read(candidateProfileProvider);
+        final isOnboarding = profile != null && !profile.onboardingCompleted;
+        return isOnboarding ? null : RouteConstants.home;
       }
 
       return null;
@@ -63,10 +83,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RoleIntentScreen(),
       ),
       GoRoute(
-        path: '/job-detail',
+        path: RouteConstants.jobDetail,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final job = state.extra as JobOpportunity? ??
+          final job =
+              state.extra as JobOpportunity? ??
               const JobOpportunity(
                 id: 'fallback',
                 title: 'Senior Flutter Engineer',
@@ -91,7 +112,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RouteConstants.mentorChat,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final mentor = state.extra as MentorProfile? ??
+          final mentor =
+              state.extra as MentorProfile? ??
               const MentorProfile(
                 id: 'men_01',
                 name: 'Kavita Menon',
@@ -110,7 +132,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RouteConstants.videoRoom,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final mentor = state.extra as MentorProfile? ??
+          final mentor =
+              state.extra as MentorProfile? ??
               const MentorProfile(
                 id: 'men_01',
                 name: 'Kavita Menon',
@@ -131,33 +154,28 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: RouteConstants.home,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: StudentDashboardScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: StudentDashboardScreen()),
           ),
           GoRoute(
             path: RouteConstants.jobs,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: JobsScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: JobsScreen()),
           ),
           GoRoute(
             path: RouteConstants.interviews,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: InterviewsScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: InterviewsScreen()),
           ),
           GoRoute(
             path: RouteConstants.experts,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: ExpertsScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ExpertsScreen()),
           ),
           GoRoute(
             path: RouteConstants.profile,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: ProfileScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ProfileScreen()),
           ),
         ],
       ),
@@ -168,4 +186,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  ref.onDispose(() {
+    router.dispose();
+    authRefresh.dispose();
+  });
+
+  return router;
 });

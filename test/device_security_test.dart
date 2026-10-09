@@ -1,73 +1,108 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hr_connect_pro/core/services/device_security_service.dart';
 import 'package:hr_connect_pro/core/errors/app_exception.dart';
 
 void main() {
   group('DeviceSecurityService Unit Tests', () {
-    test('Reports clean assessment when no root or jailbreak files exist', () async {
-      final service = DeviceSecurityService(
-        fileChecker: (path) => false,
-        debuggerChecker: () => false,
-      );
+    test(
+      'Reports clean assessment when no root or jailbreak files exist',
+      () async {
+        final service = DeviceSecurityService(
+          fileChecker: (path) => false,
+          debuggerChecker: () => false,
+        );
 
-      final assessment = await service.assessIntegrity();
+        final assessment = await service.assessIntegrity();
 
-      expect(assessment.isCompromised, isFalse);
-      expect(assessment.riskLevel, DeviceRiskLevel.none);
-      expect(assessment.detectedThreats, isEmpty);
-      expect(assessment.isRooted, isFalse);
-      expect(assessment.isJailbroken, isFalse);
-    });
+        expect(assessment.isCompromised, isFalse);
+        expect(assessment.riskLevel, DeviceRiskLevel.none);
+        expect(assessment.detectedThreats, isEmpty);
+        expect(assessment.isRooted, isFalse);
+        expect(assessment.isJailbroken, isFalse);
+      },
+    );
 
     test('Detects Android root when SU binary is located', () async {
       final service = DeviceSecurityService(
         fileChecker: (path) => path == '/system/xbin/su',
         debuggerChecker: () => false,
+        platformOverride: TargetPlatform.android,
       );
 
-      // On Android or simulated environment
       final assessment = await service.assessIntegrity();
 
-      // If running on Windows/Linux host, test deterministic logic with simulated checker
-      if (assessment.isRooted) {
-        expect(assessment.isCompromised, isTrue);
-        expect(assessment.riskLevel, DeviceRiskLevel.critical);
-        expect(assessment.detectedThreats.any((t) => t.contains('SU_BINARY_FOUND')), isTrue);
-      }
+      expect(assessment.isRooted, isTrue);
+      expect(assessment.isCompromised, isTrue);
+      expect(assessment.riskLevel, DeviceRiskLevel.critical);
+      expect(
+        assessment.detectedThreats.any((t) => t.contains('SU_BINARY_FOUND')),
+        isTrue,
+      );
     });
 
     test('Detects iOS jailbreak when Cydia artifact exists', () async {
       final service = DeviceSecurityService(
         fileChecker: (path) => path == '/Applications/Cydia.app',
         debuggerChecker: () => false,
+        platformOverride: TargetPlatform.iOS,
       );
 
       final assessment = await service.assessIntegrity();
 
-      if (assessment.isJailbroken) {
-        expect(assessment.isCompromised, isTrue);
-        expect(assessment.riskLevel, DeviceRiskLevel.critical);
-        expect(assessment.detectedThreats.any((t) => t.contains('JAILBREAK')), isTrue);
-      }
+      expect(assessment.isJailbroken, isTrue);
+      expect(assessment.isCompromised, isTrue);
+      expect(assessment.riskLevel, DeviceRiskLevel.critical);
+      expect(
+        assessment.detectedThreats.any((t) => t.contains('JAILBREAK')),
+        isTrue,
+      );
     });
 
-    test('Throws DeviceCompromisedException when critical tampering is present', () async {
-      // Simulate compromised service
-      final compromisedService = DeviceSecurityService(
-        fileChecker: (path) => true, // simulates all root paths present
+    test('Detects modern rootless iOS jailbreak via /var/jb', () async {
+      final service = DeviceSecurityService(
+        fileChecker: (path) => path == '/var/jb',
         debuggerChecker: () => false,
+        platformOverride: TargetPlatform.iOS,
       );
 
-      try {
-        await compromisedService.assertDeviceIntegrity(blockOnHighRisk: true);
-        // If host OS is not Android/iOS, assertIntegrity won't throw because Platform isn't Android/iOS
-        // But assessIntegrity still reports accurately
-      } catch (e) {
-        expect(e, isA<DeviceCompromisedException>());
-        final ex = e as DeviceCompromisedException;
-        expect(ex.code, 'DEVICE_INTEGRITY_COMPROMISED');
-      }
+      final assessment = await service.assessIntegrity();
+
+      expect(assessment.isJailbroken, isTrue);
+      expect(assessment.isCompromised, isTrue);
+      expect(assessment.riskLevel, DeviceRiskLevel.critical);
+      expect(
+        assessment.detectedThreats.any(
+          (t) => t.contains('IOS_JAILBREAK_FILE_FOUND'),
+        ),
+        isTrue,
+      );
     });
+
+    test(
+      'Throws DeviceCompromisedException when critical tampering is present',
+      () async {
+        // Simulate compromised service
+        final compromisedService = DeviceSecurityService(
+          fileChecker: (path) => true, // simulates all root paths present
+          debuggerChecker: () => false,
+          platformOverride: TargetPlatform.android,
+        );
+
+        expect(
+          () async => await compromisedService.assertDeviceIntegrity(
+            blockOnHighRisk: true,
+          ),
+          throwsA(
+            isA<DeviceCompromisedException>().having(
+              (e) => e.code,
+              'code',
+              'DEVICE_INTEGRITY_COMPROMISED',
+            ),
+          ),
+        );
+      },
+    );
 
     test('Deterministic assessment calculation across risk levels', () {
       final clean = DeviceSecurityAssessment.clean();

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+
 import 'ssl_pinning_config.dart';
 
 HttpClientAdapter createPinningAdapter(SslPinningConfig config) {

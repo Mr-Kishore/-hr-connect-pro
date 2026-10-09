@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../app/routes/route_constants.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../providers/candidate_flow_providers.dart';
@@ -36,7 +37,9 @@ class _RoleIntentScreenState extends ConsumerState<RoleIntentScreen> {
   Future<void> _handleConfirmRoadmap() async {
     setState(() => _isSaving = true);
 
-    await ref.read(candidateProfileProvider.notifier).updateRoleIntent(
+    await ref
+        .read(candidateProfileProvider.notifier)
+        .updateRoleIntent(
           currentRole: _selectedCurrentRole,
           targetRole: _selectedTargetRole,
         );
@@ -55,7 +58,7 @@ class _RoleIntentScreenState extends ConsumerState<RoleIntentScreen> {
         title: const Text('Role Alignment'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/resume-upload'),
+          onPressed: () => context.go(RouteConstants.resumeUpload),
         ),
       ),
       body: SafeArea(
@@ -145,12 +148,18 @@ class _RoleIntentScreenState extends ConsumerState<RoleIntentScreen> {
                     selectedColor: AppColors.primary,
                     labelStyle: TextStyle(
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                      color: isSelected ? Colors.white : AppColors.textPrimaryLight,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: isSelected
+                          ? Colors.white
+                          : AppColors.textPrimaryLight,
                     ),
                     backgroundColor: const Color(0xFFF8FAFC),
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : const Color(0xFFCBD5E1),
+                      color: isSelected
+                          ? AppColors.primary
+                          : const Color(0xFFCBD5E1),
                     ),
                   );
                 }).toList(),
@@ -182,12 +191,18 @@ class _RoleIntentScreenState extends ConsumerState<RoleIntentScreen> {
                     selectedColor: AppColors.primary,
                     labelStyle: TextStyle(
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                      color: isSelected ? Colors.white : AppColors.textPrimaryLight,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: isSelected
+                          ? Colors.white
+                          : AppColors.textPrimaryLight,
                     ),
                     backgroundColor: const Color(0xFFF8FAFC),
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : const Color(0xFFCBD5E1),
+                      color: isSelected
+                          ? AppColors.primary
+                          : const Color(0xFFCBD5E1),
                     ),
                   );
                 }).toList(),
@@ -202,7 +217,10 @@ class _RoleIntentScreenState extends ConsumerState<RoleIntentScreen> {
                     ? const SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       )
                     : const Row(
                         mainAxisAlignment: MainAxisAlignment.center,

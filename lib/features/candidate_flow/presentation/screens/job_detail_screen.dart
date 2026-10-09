@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/job_opportunity.dart';
 
@@ -47,7 +48,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.lock_outline, size: 16, color: AppColors.textSecondaryLight),
+                      const Icon(
+                        Icons.lock_outline,
+                        size: 16,
+                        color: AppColors.textSecondaryLight,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         'In-App Career Gateway • ${widget.job.company}',
@@ -88,7 +93,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     const SizedBox(height: 6),
                     Text(
                       'Destination: ${widget.job.portalUrl}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondaryLight,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const LinearProgressIndicator(
@@ -118,7 +126,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                       Text(
                         'Your profile credentials are protected. No external redirection out of the app.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 13, color: AppColors.textSecondaryLight),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondaryLight,
+                        ),
                       ),
                     ],
                   ),
@@ -172,13 +183,19 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                       const SizedBox(height: 4),
                       Text(
                         '${job.company} • ${job.location}',
-                        style: const TextStyle(fontSize: 14, color: AppColors.textSecondaryLight),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondaryLight,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF0FDF4),
                     borderRadius: BorderRadius.circular(16),
@@ -229,7 +246,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 children: [
                   const Row(
                     children: [
-                      Icon(Icons.analytics_outlined, color: AppColors.primary, size: 20),
+                      Icon(
+                        Icons.analytics_outlined,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
                       SizedBox(width: 8),
                       Text(
                         'Competency Fit Breakdown',
@@ -258,7 +279,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     runSpacing: 8,
                     children: job.matchedSkills.map((s) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFDCFCE7),
                           borderRadius: BorderRadius.circular(6),
@@ -267,7 +291,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.check, size: 14, color: Color(0xFF15803D)),
+                            const Icon(
+                              Icons.check,
+                              size: 14,
+                              color: Color(0xFF15803D),
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               s,
@@ -300,7 +328,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     runSpacing: 8,
                     children: job.missingSkills.map((s) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFEF3C7),
                           borderRadius: BorderRadius.circular(6),
@@ -309,7 +340,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.add_circle_outline, size: 14, color: Color(0xFFB45309)),
+                            const Icon(
+                              Icons.add_circle_outline,
+                              size: 14,
+                              color: Color(0xFFB45309),
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               s,
@@ -333,7 +368,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.lightbulb_outline, size: 18, color: AppColors.primary),
+                      const Icon(
+                        Icons.lightbulb_outline,
+                        size: 18,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(

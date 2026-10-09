@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/mentor_profile.dart';
 
@@ -131,14 +133,21 @@ class _VideoCallRoomScreenState extends State<VideoCallRoomScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.lock, size: 12, color: AppColors.accent),
+                        const Icon(
+                          Icons.lock,
+                          size: 12,
+                          color: AppColors.accent,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           _formatDuration(_callSeconds),
@@ -152,7 +161,10 @@ class _VideoCallRoomScreenState extends State<VideoCallRoomScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(20),
@@ -186,7 +198,11 @@ class _VideoCallRoomScreenState extends State<VideoCallRoomScreen> {
                 ),
                 child: Center(
                   child: _isVideoOff
-                      ? const Icon(Icons.videocam_off, color: Colors.white54, size: 24)
+                      ? const Icon(
+                          Icons.videocam_off,
+                          color: Colors.white54,
+                          size: 24,
+                        )
                       : const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -194,7 +210,10 @@ class _VideoCallRoomScreenState extends State<VideoCallRoomScreen> {
                             SizedBox(height: 6),
                             Text(
                               'You',
-                              style: TextStyle(color: Colors.white70, fontSize: 11),
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                              ),
                             ),
                           ],
                         ),
@@ -208,7 +227,10 @@ class _VideoCallRoomScreenState extends State<VideoCallRoomScreen> {
               left: 20,
               right: 20,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 20,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(30),
@@ -231,11 +253,15 @@ class _VideoCallRoomScreenState extends State<VideoCallRoomScreen> {
                         _isVideoOff ? Icons.videocam_off : Icons.videocam,
                         color: _isVideoOff ? AppColors.error : Colors.white,
                       ),
-                      onPressed: () => setState(() => _isVideoOff = !_isVideoOff),
+                      onPressed: () =>
+                          setState(() => _isVideoOff = !_isVideoOff),
                     ),
                     // Switch Camera
                     IconButton(
-                      icon: const Icon(Icons.flip_camera_ios, color: Colors.white),
+                      icon: const Icon(
+                        Icons.flip_camera_ios,
+                        color: Colors.white,
+                      ),
                       onPressed: () {},
                     ),
                     // End Call

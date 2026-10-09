@@ -1,10 +1,6 @@
 import '../../core/network/pinning/ssl_pinning_config.dart';
 
-enum EnvironmentType {
-  dev,
-  staging,
-  prod,
-}
+enum EnvironmentType { dev, staging, prod }
 
 class AppEnvironment {
   final EnvironmentType type;

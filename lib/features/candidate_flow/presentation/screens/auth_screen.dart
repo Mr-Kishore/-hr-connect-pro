@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../app/routes/route_constants.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/providers/core_providers.dart';
 import '../providers/candidate_flow_providers.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
@@ -31,7 +33,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Future<void> _handleProceedPhone() async {
     final rawPhone = _phoneController.text.trim();
     if (rawPhone.length < 10) {
-      setState(() => _errorMessage = 'Please enter a valid 10-digit mobile number');
+      setState(
+        () => _errorMessage = 'Please enter a valid 10-digit mobile number',
+      );
       return;
     }
 
@@ -40,8 +44,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       _errorMessage = null;
     });
 
-    final formattedPhone = rawPhone.startsWith('+91') ? rawPhone : '+91$rawPhone';
-    final exists = await ref.read(candidateProfileProvider.notifier).checkUserExists(formattedPhone);
+    final formattedPhone = rawPhone.startsWith('+91')
+        ? rawPhone
+        : '+91$rawPhone';
+    final exists = await ref
+        .read(candidateProfileProvider.notifier)
+        .checkUserExists(formattedPhone);
 
     setState(() {
       _isLoading = false;
@@ -64,17 +72,33 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     });
 
     final rawPhone = _phoneController.text.trim();
-    final formattedPhone = rawPhone.startsWith('+91') ? rawPhone : '+91$rawPhone';
-    final profile = await ref.read(candidateProfileProvider.notifier).loginOrRegister(formattedPhone, otp);
+    final formattedPhone = rawPhone.startsWith('+91')
+        ? rawPhone
+        : '+91$rawPhone';
+    final profile = await ref
+        .read(candidateProfileProvider.notifier)
+        .loginOrRegister(formattedPhone, otp);
+    if (!mounted) return;
 
-    setState(() => _isLoading = false);
+    // Start the session the router guard checks. Without it, every route after
+    // sign-in was redirected straight back to /auth. (Mock tokens until the OTP
+    // verify API issues real ones.)
+    await ref
+        .read(authStateProvider.notifier)
+        .login(
+          accessToken: 'phase1_mock_access_token',
+          refreshToken: 'phase1_mock_refresh_token',
+          userId: profile.id,
+          role: 'candidate',
+        );
 
     if (!mounted) return;
+    setState(() => _isLoading = false);
 
     if (profile.onboardingCompleted) {
       context.go(RouteConstants.home);
     } else {
-      context.go('/resume-upload');
+      context.go(RouteConstants.resumeUpload);
     }
   }
 
@@ -249,7 +273,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         SizedBox(width: 8),
                         SizedBox(
                           height: 20,
-                          child: VerticalDivider(color: Color(0xFFCBD5E1), width: 1),
+                          child: VerticalDivider(
+                            color: Color(0xFFCBD5E1),
+                            width: 1,
+                          ),
                         ),
                       ],
                     ),
@@ -322,7 +349,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : Text(_otpSent ? 'Verify & Continue' : 'Get Verification Code'),
+                    : Text(
+                        _otpSent
+                            ? 'Verify & Continue'
+                            : 'Get Verification Code',
+                      ),
               ),
 
               const SizedBox(height: 36),
@@ -359,7 +390,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             onPressed: () => _fillSampleUser(existing: false),
                             child: const Text(
                               'Test New User',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),
@@ -373,7 +407,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             onPressed: () => _fillSampleUser(existing: true),
                             child: const Text(
                               'Test Existing User',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),

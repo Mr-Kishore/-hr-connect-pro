@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../app/routes/route_constants.dart';
 import '../../../app/theme/app_colors.dart';
 
@@ -49,14 +50,21 @@ class HomeScreen extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.accent,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Text(
                             'Profile Complete: 85%',
-                            style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -97,37 +105,61 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         const Text(
                           'Senior Flutter Developer',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.accent.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(
                             '92% Match',
-                            style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold, fontSize: 12),
+                            style: TextStyle(
+                              color: AppColors.accent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    const Text('Fintech Innovations • Bangalore / Hybrid', style: TextStyle(color: AppColors.textSecondaryLight)),
+                    const Text(
+                      'Fintech Innovations • Bangalore / Hybrid',
+                      style: TextStyle(color: AppColors.textSecondaryLight),
+                    ),
                     const SizedBox(height: 12),
                     const Wrap(
                       spacing: 6,
                       runSpacing: 6,
                       children: [
-                        Chip(label: Text('Flutter'), visualDensity: VisualDensity.compact),
-                        Chip(label: Text('Dart'), visualDensity: VisualDensity.compact),
-                        Chip(label: Text('Clean Architecture'), visualDensity: VisualDensity.compact),
+                        Chip(
+                          label: Text('Flutter'),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        Chip(
+                          label: Text('Dart'),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        Chip(
+                          label: Text('Clean Architecture'),
+                          visualDensity: VisualDensity.compact,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () => context.go(RouteConstants.jobs),
-                      child: const Text('Schedule Interview (8 Slots Available)'),
+                      child: const Text(
+                        'Schedule Interview (8 Slots Available)',
+                      ),
                     ),
                   ],
                 ),
