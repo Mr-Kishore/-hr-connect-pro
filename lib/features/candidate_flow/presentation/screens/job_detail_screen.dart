@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/job_opportunity.dart';
+import 'in_app_browser_screen.dart';
 
 class JobDetailScreen extends StatefulWidget {
   final JobOpportunity job;
@@ -28,106 +29,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   }
 
   void _openInAppPortal() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => InAppBrowserScreen(job: widget.job),
       ),
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.85,
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.lock_outline, size: 16, color: AppColors.textSecondaryLight),
-                      const SizedBox(width: 6),
-                      Text(
-                        'In-App Career Gateway • ${widget.job.company}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondaryLight,
-                        ),
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const Divider(),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Redirecting inside HR Connect Pro Secure Sandbox',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Destination: ${widget.job.portalUrl}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
-                    ),
-                    const SizedBox(height: 16),
-                    const LinearProgressIndicator(
-                      backgroundColor: Color(0xFFE2E8F0),
-                      valueColor: AlwaysStoppedAnimation(AppColors.accent),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.public, size: 48, color: Color(0xFF94A3B8)),
-                      SizedBox(height: 12),
-                      Text(
-                        'Sandboxed Browser Active',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimaryLight,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Your profile credentials are protected. No external redirection out of the app.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 13, color: AppColors.textSecondaryLight),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 

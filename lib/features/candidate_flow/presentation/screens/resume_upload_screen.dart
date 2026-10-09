@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -52,6 +53,21 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
       _isScanning = false;
       _isParsed = true;
     });
+  }
+
+  Future<void> _handlePickRealFile() async {
+    try {
+      final files = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'docx'],
+      );
+      if (files.isNotEmpty) {
+        final name = files.first.name;
+        _triggerResumeScan(name);
+      }
+    } catch (_) {
+      _triggerResumeScan('Candidate_Resume.pdf');
+    }
   }
 
   @override
@@ -210,9 +226,7 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
                             OutlinedButton.icon(
                               icon: const Icon(Icons.file_upload_outlined, size: 18),
                               label: const Text('Browse File'),
-                              onPressed: _isScanning
-                                  ? null
-                                  : () => _triggerResumeScan('Candidate_Resume.pdf'),
+                              onPressed: _isScanning ? null : _handlePickRealFile,
                             ),
                             const SizedBox(width: 12),
                             ElevatedButton.icon(

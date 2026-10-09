@@ -6,6 +6,7 @@ import '../../../../app/routes/route_constants.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/job_opportunity.dart';
 import '../../domain/models/recommended_course.dart';
+import '../widgets/demo_controller_sheet.dart';
 import '../providers/candidate_flow_providers.dart';
 
 class StudentDashboardScreen extends ConsumerWidget {
@@ -25,6 +26,11 @@ class StudentDashboardScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('HR Connect Pro'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.tune_rounded),
+            tooltip: 'Investor Pitch Navigator',
+            onPressed: () => DemoControllerSheet.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.people_outline_rounded),
             tooltip: 'Industry Mentors',

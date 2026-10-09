@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/mentor_profile.dart';
+import '../widgets/mentor_booking_sheet.dart';
 import '../providers/candidate_flow_providers.dart';
 
 class MentorConnectScreen extends ConsumerWidget {
@@ -208,7 +208,11 @@ class MentorConnectScreen extends ConsumerWidget {
                     ),
                     icon: const Icon(Icons.chat_bubble_outline_rounded, size: 15),
                     label: const Text('Chat', style: TextStyle(fontSize: 12)),
-                    onPressed: () => context.push('/mentor-chat', extra: mentor),
+                    onPressed: () => MentorBookingSheet.show(
+                      context,
+                      mentor: mentor,
+                      isVideoSession: false,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
@@ -218,7 +222,11 @@ class MentorConnectScreen extends ConsumerWidget {
                     ),
                     icon: const Icon(Icons.videocam_outlined, size: 16),
                     label: const Text('Video Room', style: TextStyle(fontSize: 12)),
-                    onPressed: () => context.push('/video-room', extra: mentor),
+                    onPressed: () => MentorBookingSheet.show(
+                      context,
+                      mentor: mentor,
+                      isVideoSession: true,
+                    ),
                   ),
                 ],
               ),
