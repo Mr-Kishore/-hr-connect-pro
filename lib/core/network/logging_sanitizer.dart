@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -59,7 +60,9 @@ class LoggingSanitizer {
     final sanitized = <String, dynamic>{};
     headers.forEach((key, value) {
       if (sensitiveHeaders.contains(key.toLowerCase())) {
-        if (key.toLowerCase() == 'authorization' && value is String && value.startsWith('Bearer ')) {
+        if (key.toLowerCase() == 'authorization' &&
+            value is String &&
+            value.startsWith('Bearer ')) {
           sanitized[key] = 'Bearer $redactedPlaceholder';
         } else {
           sanitized[key] = redactedPlaceholder;
@@ -111,10 +114,7 @@ class LoggingSanitizer {
         );
       }).toList();
 
-      return {
-        'fields': sanitizedFields,
-        'files': sanitizedFiles,
-      };
+      return {'fields': sanitizedFields, 'files': sanitizedFiles};
     }
 
     if (data is String) {
@@ -187,10 +187,7 @@ class LoggingSanitizerInterceptor extends Interceptor {
   final bool isEnabled;
   final void Function(String message)? logPrinter;
 
-  LoggingSanitizerInterceptor({
-    this.isEnabled = true,
-    this.logPrinter,
-  });
+  LoggingSanitizerInterceptor({this.isEnabled = true, this.logPrinter});
 
   void _log(String message) {
     if (!isEnabled) return;
@@ -205,7 +202,9 @@ class LoggingSanitizerInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (isEnabled) {
       final sanitizedUri = LoggingSanitizer.sanitizeUri(options.uri);
-      final sanitizedHeaders = LoggingSanitizer.sanitizeHeaders(options.headers);
+      final sanitizedHeaders = LoggingSanitizer.sanitizeHeaders(
+        options.headers,
+      );
       final sanitizedData = LoggingSanitizer.sanitizeData(options.data);
 
       _log('┌─── [HTTP REQUEST] ${options.method} $sanitizedUri');
@@ -221,7 +220,9 @@ class LoggingSanitizerInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (isEnabled) {
-      final sanitizedUri = LoggingSanitizer.sanitizeUri(response.requestOptions.uri);
+      final sanitizedUri = LoggingSanitizer.sanitizeUri(
+        response.requestOptions.uri,
+      );
       final sanitizedData = LoggingSanitizer.sanitizeData(response.data);
 
       _log('┌─── [HTTP RESPONSE] ${response.statusCode} $sanitizedUri');
@@ -237,9 +238,13 @@ class LoggingSanitizerInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (isEnabled) {
       final sanitizedUri = LoggingSanitizer.sanitizeUri(err.requestOptions.uri);
-      final sanitizedResponse = LoggingSanitizer.sanitizeData(err.response?.data);
+      final sanitizedResponse = LoggingSanitizer.sanitizeData(
+        err.response?.data,
+      );
 
-      _log('┌─── [HTTP ERROR] ${err.response?.statusCode ?? 'N/A'} $sanitizedUri');
+      _log(
+        '┌─── [HTTP ERROR] ${err.response?.statusCode ?? 'N/A'} $sanitizedUri',
+      );
       _log('│ Message: ${err.message}');
       if (sanitizedResponse != null) {
         _log('│ Error Response: $sanitizedResponse');

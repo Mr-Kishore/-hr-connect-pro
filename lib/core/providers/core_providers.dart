@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../services/device_security_service.dart';
 import '../services/secure_storage_service.dart';
 import '../network/api_client.dart';
@@ -65,10 +66,7 @@ class AuthNotifier extends Notifier<AuthState> {
         isLoading: false,
       );
     } else {
-      state = const AuthState(
-        isAuthenticated: false,
-        isLoading: false,
-      );
+      state = const AuthState(isAuthenticated: false, isLoading: false);
     }
   }
 
@@ -83,10 +81,7 @@ class AuthNotifier extends Notifier<AuthState> {
       accessToken: accessToken,
       refreshToken: refreshToken,
     );
-    await storage.saveUserDetails(
-      userId: userId,
-      role: role,
-    );
+    await storage.saveUserDetails(userId: userId, role: role);
     state = AuthState(
       isAuthenticated: true,
       userId: userId,
@@ -98,11 +93,10 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<void> logout() async {
     final storage = ref.read(secureStorageServiceProvider);
     await storage.clearAuth();
-    state = const AuthState(
-      isAuthenticated: false,
-      isLoading: false,
-    );
+    state = const AuthState(isAuthenticated: false, isLoading: false);
   }
 }
 
-final authStateProvider = NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
+final authStateProvider = NotifierProvider<AuthNotifier, AuthState>(
+  AuthNotifier.new,
+);

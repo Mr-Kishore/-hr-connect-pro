@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../../app/routes/route_constants.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/mentor_profile.dart';
 import '../providers/candidate_flow_providers.dart';
@@ -15,9 +16,7 @@ class MentorConnectScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: const Text('Industry Mentors'),
-      ),
+      appBar: AppBar(title: const Text('Industry Mentors')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(
@@ -33,7 +32,11 @@ class MentorConnectScreen extends ConsumerWidget {
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.shield_outlined, color: AppColors.accent, size: 22),
+                  Icon(
+                    Icons.shield_outlined,
+                    color: AppColors.accent,
+                    size: 22,
+                  ),
                   SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -64,15 +67,15 @@ class MentorConnectScreen extends ConsumerWidget {
 
             mentorsAsync.when(
               data: (mentors) {
-                return ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: mentors.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 14),
-                  itemBuilder: (context, index) {
-                    final mentor = mentors[index];
-                    return _buildMentorCard(context, mentor, index);
-                  },
+                return Column(
+                  children: [
+                    for (int i = 0; i < mentors.length; i++) ...[
+                      if (i > 0) const SizedBox(height: 14),
+                      RepaintBoundary(
+                        child: _buildMentorCard(context, mentors[i], i),
+                      ),
+                    ],
+                  ],
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -84,7 +87,11 @@ class MentorConnectScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMentorCard(BuildContext context, MentorProfile mentor, int index) {
+  Widget _buildMentorCard(
+    BuildContext context,
+    MentorProfile mentor,
+    int index,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -126,7 +133,11 @@ class MentorConnectScreen extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        const Icon(Icons.verified, size: 16, color: Color(0xFF38BDF8)),
+                        const Icon(
+                          Icons.verified,
+                          size: 16,
+                          color: Color(0xFF38BDF8),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 2),
@@ -145,18 +156,28 @@ class MentorConnectScreen extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded, size: 16, color: Color(0xFFF59E0B)),
+                      const Icon(
+                        Icons.star_rounded,
+                        size: 16,
+                        color: Color(0xFFF59E0B),
+                      ),
                       const SizedBox(width: 2),
                       Text(
                         '${mentor.rating}',
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${mentor.totalMentees} sessions',
-                    style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textSecondaryLight,
+                    ),
                   ),
                 ],
               ),
@@ -178,7 +199,10 @@ class MentorConnectScreen extends ConsumerWidget {
                 ),
                 child: Text(
                   exp,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               );
             }).toList(),
@@ -203,22 +227,36 @@ class MentorConnectScreen extends ConsumerWidget {
                 children: [
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
                       minimumSize: const Size(60, 36),
                     ),
-                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 15),
+                    icon: const Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      size: 15,
+                    ),
                     label: const Text('Chat', style: TextStyle(fontSize: 12)),
-                    onPressed: () => context.push('/mentor-chat', extra: mentor),
+                    onPressed: () =>
+                        context.push(RouteConstants.mentorChat, extra: mentor),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       minimumSize: const Size(60, 36),
                     ),
                     icon: const Icon(Icons.videocam_outlined, size: 16),
-                    label: const Text('Video Room', style: TextStyle(fontSize: 12)),
-                    onPressed: () => context.push('/video-room', extra: mentor),
+                    label: const Text(
+                      'Video Room',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    onPressed: () =>
+                        context.push(RouteConstants.videoRoom, extra: mentor),
                   ),
                 ],
               ),
@@ -226,6 +264,6 @@ class MentorConnectScreen extends ConsumerWidget {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: (index * 70).ms, duration: 300.ms);
+    );
   }
 }

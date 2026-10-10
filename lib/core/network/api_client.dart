@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+
 import '../errors/app_exception.dart';
 import '../services/secure_storage_service.dart';
 import '../../app/config/environment.dart';
@@ -10,11 +11,9 @@ class ApiClient {
   late final Dio dio;
   final SecureStorageService storageService;
 
-  ApiClient({
-    required this.storageService,
-    Dio? customDio,
-  }) {
-    final baseDio = customDio ??
+  ApiClient({required this.storageService, Dio? customDio}) {
+    final baseDio =
+        customDio ??
         Dio(
           BaseOptions(
             baseUrl: AppEnvironment.current.apiBaseUrl,
@@ -33,10 +32,7 @@ class ApiClient {
     );
 
     baseDio.interceptors.add(
-      AuthInterceptor(
-        storageService: storageService,
-        dio: baseDio,
-      ),
+      AuthInterceptor(storageService: storageService, dio: baseDio),
     );
 
     // Attach Logging Sanitizer Interceptor (redacts tokens & PII, active per environment config)
@@ -152,7 +148,8 @@ class ApiClient {
 
     if (statusCode == 401) {
       return const AuthException(
-        message: 'Your session has expired or is invalid. Please sign in again.',
+        message:
+            'Your session has expired or is invalid. Please sign in again.',
       );
     }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/mentor_profile.dart';
 import '../providers/candidate_flow_providers.dart';
@@ -10,7 +11,8 @@ class EncryptedChatScreen extends ConsumerStatefulWidget {
   const EncryptedChatScreen({super.key, required this.mentor});
 
   @override
-  ConsumerState<EncryptedChatScreen> createState() => _EncryptedChatScreenState();
+  ConsumerState<EncryptedChatScreen> createState() =>
+      _EncryptedChatScreenState();
 }
 
 class _EncryptedChatScreenState extends ConsumerState<EncryptedChatScreen> {
@@ -57,15 +59,25 @@ class _EncryptedChatScreenState extends ConsumerState<EncryptedChatScreen> {
               children: [
                 Text(
                   widget.mentor.name,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(width: 6),
-                const Icon(Icons.lock_outline, size: 14, color: AppColors.accent),
+                const Icon(
+                  Icons.lock_outline,
+                  size: 14,
+                  color: AppColors.accent,
+                ),
               ],
             ),
             Text(
               '${widget.mentor.role} • ${widget.mentor.company}',
-              style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+              style: const TextStyle(
+                fontSize: 11,
+                color: AppColors.textSecondaryLight,
+              ),
             ),
           ],
         ),
@@ -80,7 +92,11 @@ class _EncryptedChatScreenState extends ConsumerState<EncryptedChatScreen> {
               color: const Color(0xFFEFF6FF),
               child: const Row(
                 children: [
-                  Icon(Icons.security_outlined, size: 16, color: AppColors.primary),
+                  Icon(
+                    Icons.security_outlined,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -107,18 +123,24 @@ class _EncryptedChatScreenState extends ConsumerState<EncryptedChatScreen> {
                   final isMe = msg.isFromCandidate;
 
                   return Align(
-                    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                    alignment: isMe
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width * 0.78,
                       ),
                       child: Column(
-                        crossAxisAlignment:
-                            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        crossAxisAlignment: isMe
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
                             decoration: BoxDecoration(
                               color: isMe ? AppColors.primary : Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -133,7 +155,9 @@ class _EncryptedChatScreenState extends ConsumerState<EncryptedChatScreen> {
                                   msg.text,
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: isMe ? Colors.white : AppColors.textPrimaryLight,
+                                    color: isMe
+                                        ? Colors.white
+                                        : AppColors.textPrimaryLight,
                                     height: 1.35,
                                   ),
                                 ),
@@ -146,7 +170,11 @@ class _EncryptedChatScreenState extends ConsumerState<EncryptedChatScreen> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.info_outline, size: 12, color: Color(0xFFD97706)),
+                                  const Icon(
+                                    Icons.info_outline,
+                                    size: 12,
+                                    color: Color(0xFFD97706),
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     msg.safetyNotice!,
@@ -175,16 +203,32 @@ class _EncryptedChatScreenState extends ConsumerState<EncryptedChatScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    const Text('Test Filter:', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                    const Text(
+                      'Test Filter:',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     ActionChip(
-                      label: const Text('Simulate Phone Leak', style: TextStyle(fontSize: 11)),
-                      onPressed: () => _sendMessage('Call me at +91 9876543210 for direct payment'),
+                      label: const Text(
+                        'Simulate Phone Leak',
+                        style: TextStyle(fontSize: 11),
+                      ),
+                      onPressed: () => _sendMessage(
+                        'Call me at +91 9876543210 for direct payment',
+                      ),
                     ),
                     const SizedBox(width: 6),
                     ActionChip(
-                      label: const Text('Simulate Email Leak', style: TextStyle(fontSize: 11)),
-                      onPressed: () => _sendMessage('Email me: aditya@gmail.com to chat outside'),
+                      label: const Text(
+                        'Simulate Email Leak',
+                        style: TextStyle(fontSize: 11),
+                      ),
+                      onPressed: () => _sendMessage(
+                        'Email me: aditya@gmail.com to chat outside',
+                      ),
                     ),
                   ],
                 ),
@@ -204,14 +248,20 @@ class _EncryptedChatScreenState extends ConsumerState<EncryptedChatScreen> {
                       controller: _messageController,
                       decoration: const InputDecoration(
                         hintText: 'Type your message...',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.send_rounded, color: AppColors.primary),
+                    icon: const Icon(
+                      Icons.send_rounded,
+                      color: AppColors.primary,
+                    ),
                     onPressed: () => _sendMessage(),
                   ),
                 ],

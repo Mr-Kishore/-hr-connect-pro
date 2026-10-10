@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../../app/routes/route_constants.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../providers/candidate_flow_providers.dart';
 
@@ -43,7 +45,9 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
 
     _scanController.repeat(reverse: true);
 
-    await ref.read(candidateProfileProvider.notifier).parseResume(fileName: fileName);
+    await ref
+        .read(candidateProfileProvider.notifier)
+        .parseResume(fileName: fileName);
 
     if (!mounted) return;
     _scanController.stop();
@@ -66,7 +70,7 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
         title: const Text('Resume Analysis'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/auth'),
+          onPressed: () => context.go(RouteConstants.candidateAuth),
         ),
       ),
       body: SafeArea(
@@ -136,99 +140,133 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
 
               const SizedBox(height: 24),
 
-              // Document Scanner Card
+              // Document Scanner Card (Interactive)
               Stack(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: _isParsed
-                          ? const Color(0xFFF0FDF4)
-                          : const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: _isParsed
-                            ? const Color(0xFF86EFAC)
-                            : const Color(0xFFCBD5E1),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: _isParsed
-                                ? const Color(0xFFDCFCE7)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.04),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            _isParsed
-                                ? Icons.task_alt_rounded
-                                : Icons.description_outlined,
-                            size: 28,
-                            color: _isParsed ? AppColors.accent : AppColors.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _selectedFile ?? 'Select or drop your PDF / DOCX',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: _isParsed
-                                ? AppColors.accent
-                                : AppColors.textPrimaryLight,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _isScanning
-                              ? 'Scanning document vectors & skills...'
-                              : (_isParsed
-                                  ? 'Skills successfully mapped to profile'
-                                  : 'PDF or DOCX format, up to 5 MB'),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondaryLight,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            OutlinedButton.icon(
-                              icon: const Icon(Icons.file_upload_outlined, size: 18),
-                              label: const Text('Browse File'),
-                              onPressed: _isScanning
-                                  ? null
-                                  : () => _triggerResumeScan('Candidate_Resume.pdf'),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: _isScanning
+                          ? null
+                          : () => _triggerResumeScan(
+                              _selectedFile ?? 'Candidate_Resume.pdf',
                             ),
-                            const SizedBox(width: 12),
-                            ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 36,
+                          horizontal: 20,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _isParsed
+                              ? const Color(0xFFF0FDF4)
+                              : const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: _isParsed
+                                ? const Color(0xFF86EFAC)
+                                : const Color(0xFFCBD5E1),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: _isParsed
+                                    ? const Color(0xFFDCFCE7)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.04),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                              icon: const Icon(Icons.auto_awesome, size: 16),
-                              label: const Text('Use Sample Resume'),
-                              onPressed: _isScanning
-                                  ? null
-                                  : () => _triggerResumeScan('Aditya_Flutter_Lead.pdf'),
+                              child: Icon(
+                                _isParsed
+                                    ? Icons.task_alt_rounded
+                                    : Icons.description_outlined,
+                                size: 28,
+                                color: _isParsed
+                                    ? AppColors.accent
+                                    : AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _selectedFile ??
+                                  'Tap here to select or drop your PDF / DOCX',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: _isParsed
+                                    ? AppColors.accent
+                                    : AppColors.textPrimaryLight,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _isScanning
+                                  ? 'Scanning document vectors & skills...'
+                                  : (_isParsed
+                                        ? 'Skills successfully mapped to profile'
+                                        : 'Tap card or use buttons below (up to 5 MB)'),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondaryLight,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: [
+                                OutlinedButton.icon(
+                                  icon: const Icon(
+                                    Icons.file_upload_outlined,
+                                    size: 18,
+                                  ),
+                                  label: const Text('Browse File'),
+                                  onPressed: _isScanning
+                                      ? null
+                                      : () => _triggerResumeScan(
+                                          'Candidate_Resume.pdf',
+                                        ),
+                                ),
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    minimumSize: const Size(0, 48),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.auto_awesome,
+                                    size: 16,
+                                  ),
+                                  label: const Text('Use Sample Resume'),
+                                  onPressed: _isScanning
+                                      ? null
+                                      : () => _triggerResumeScan(
+                                          'Aditya_Flutter_Lead.pdf',
+                                        ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
 
@@ -241,13 +279,18 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
                           animation: _scanController,
                           builder: (context, child) {
                             return Align(
-                              alignment: Alignment(0, (_scanController.value * 2) - 1),
+                              alignment: Alignment(
+                                0,
+                                (_scanController.value * 2) - 1,
+                              ),
                               child: Container(
                                 height: 3,
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.accent.withValues(alpha: 0.8),
+                                      color: AppColors.accent.withValues(
+                                        alpha: 0.8,
+                                      ),
                                       blurRadius: 16,
                                       spreadRadius: 4,
                                     ),
@@ -269,7 +312,11 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
               if (_isParsed && skills.isNotEmpty) ...[
                 Row(
                   children: [
-                    const Icon(Icons.check_circle_outline, color: AppColors.accent, size: 18),
+                    const Icon(
+                      Icons.check_circle_outline,
+                      color: AppColors.accent,
+                      size: 18,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       'Detected Competencies (${skills.length})',
@@ -289,7 +336,10 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
                   runSpacing: 8,
                   children: skills.map((skill) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 7,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(8),
@@ -311,7 +361,7 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
 
                 // Next Step CTA
                 ElevatedButton(
-                  onPressed: () => context.go('/role-intent'),
+                  onPressed: () => context.go(RouteConstants.roleIntent),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -321,6 +371,22 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen>
                     ],
                   ),
                 ).animate().fadeIn(delay: 300.ms),
+              ] else if (!_isScanning) ...[
+                const SizedBox(height: 24),
+                Center(
+                  child: TextButton.icon(
+                    onPressed: () => context.go(RouteConstants.roleIntent),
+                    icon: const Icon(Icons.east_rounded, size: 16),
+                    label: const Text(
+                      'Skip for now & proceed to Role Alignment',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondaryLight,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ],
           ),

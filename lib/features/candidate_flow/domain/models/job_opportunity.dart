@@ -1,3 +1,5 @@
+import 'interview_booking.dart';
+
 class JobOpportunity {
   final String id;
   final String title;
@@ -11,6 +13,9 @@ class JobOpportunity {
   final String portalUrl;
   final bool isDirectApply;
   final String postedAgo;
+  final bool hasInstantInterview;
+  final List<InterviewSlot> availableSlots;
+  final List<String> interviewRounds;
 
   const JobOpportunity({
     required this.id,
@@ -25,5 +30,12 @@ class JobOpportunity {
     required this.portalUrl,
     this.isDirectApply = true,
     this.postedAgo = '2 days ago',
+    this.hasInstantInterview = true,
+    this.availableSlots = const [],
+    this.interviewRounds = const [
+      'L1 Technical Screening',
+      'L2 Coding & Problem Solving',
+      'HR Final',
+    ],
   });
 }

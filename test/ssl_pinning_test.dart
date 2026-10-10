@@ -10,10 +10,14 @@ void main() {
   group('Phase 0.4: Automated Testing & Quality Checks (ssl_pinning_test.dart)', () {
     const prodHost = 'api.hrconnectpro.app';
     const stagingHost = 'api-staging.hrconnectpro.app';
-    const primaryPin = '4A:8B:2F:10:9C:5D:7E:33:F1:66:88:AA:BC:DD:EE:FF:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:01';
-    const backupPin = 'B2:1C:33:55:77:99:AA:CC:EE:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:02';
-    const stagingPin = '5C:9E:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD';
-    const fakeProxyPin = '00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF';
+    const primaryPin =
+        '4A:8B:2F:10:9C:5D:7E:33:F1:66:88:AA:BC:DD:EE:FF:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:01';
+    const backupPin =
+        'B2:1C:33:55:77:99:AA:CC:EE:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:02';
+    const stagingPin =
+        '5C:9E:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD';
+    const fakeProxyPin =
+        '00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF';
 
     final multiHostConfig = SslPinningConfig(
       isEnabled: true,
@@ -29,7 +33,10 @@ void main() {
       final rawHex = primaryPin.replaceAll(':', '').toLowerCase();
       final spaced = primaryPin.replaceAll(':', ' ');
 
-      expect(SslPinningConfig.normalizeFingerprint(formattedWithColons), rawHex);
+      expect(
+        SslPinningConfig.normalizeFingerprint(formattedWithColons),
+        rawHex,
+      );
       expect(SslPinningConfig.normalizeFingerprint(spaced), rawHex);
       expect(SslPinningConfig.normalizeFingerprint(rawHex), rawHex);
     });
@@ -55,7 +62,10 @@ void main() {
 
     // 5. MitM & Rogue Certificate Rejection
     test('QC-5: Rejects rogue proxy, Burp/Charles, or attacker certificate fingerprint', () {
-      final isValid = multiHostConfig.isCertificateValid(prodHost, fakeProxyPin);
+      final isValid = multiHostConfig.isCertificateValid(
+        prodHost,
+        fakeProxyPin,
+      );
       expect(isValid, isFalse);
     });
 
@@ -67,10 +77,16 @@ void main() {
     });
 
     // 7. Unlisted Domain Defense
-    test('QC-7: Rejects certificates from unlisted domains when pinning is active', () {
-      final isValid = multiHostConfig.isCertificateValid('untrusted.hrconnectpro.app', primaryPin);
-      expect(isValid, isFalse);
-    });
+    test(
+      'QC-7: Rejects certificates from unlisted domains when pinning is active',
+      () {
+        final isValid = multiHostConfig.isCertificateValid(
+          'untrusted.hrconnectpro.app',
+          primaryPin,
+        );
+        expect(isValid, isFalse);
+      },
+    );
 
     // 8. Dev Mode Bypass Validation
     test('QC-8: Permits mock/local certificates when pinning is disabled (Dev mode)', () {
@@ -86,7 +102,11 @@ void main() {
       expect(prodConfig.pinnedFingerprints.containsKey(prodHost), isTrue);
 
       final prodPins = prodConfig.pinnedFingerprints[prodHost]!;
-      expect(prodPins.length, greaterThanOrEqualTo(2), reason: 'Must have at least 1 backup pin for key rotation');
+      expect(
+        prodPins.length,
+        greaterThanOrEqualTo(2),
+        reason: 'Must have at least 1 backup pin for key rotation',
+      );
     });
 
     // 10. Adapter Instantiation

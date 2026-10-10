@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../app/routes/route_constants.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/providers/core_providers.dart';
@@ -18,9 +19,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _handleSendOtp() {
     final phone = _phoneController.text.trim();
-    if (phone.isEmpty) {
+    final cleanDigits = phone.replaceAll(RegExp(r'\D'), '');
+    if (cleanDigits.length < 10 || cleanDigits.length > 13) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your mobile phone number')),
+        const SnackBar(
+          content: Text('Please enter a valid 10-digit mobile phone number'),
+        ),
       );
       return;
     }
@@ -30,7 +34,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // Simulated Phase 0 OTP verification logic
     Future.delayed(const Duration(milliseconds: 600), () async {
       if (!mounted) return;
-      await ref.read(authStateProvider.notifier).login(
+      await ref
+          .read(authStateProvider.notifier)
+          .login(
             accessToken: 'phase0_mock_jwt_access',
             refreshToken: 'phase0_mock_jwt_refresh',
             userId: 'phase0-test-user-id',
@@ -70,7 +76,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 8),
               const Text(
                 'Discover matched jobs, self-book interviews, and connect with top industry experts.',
-                style: TextStyle(fontSize: 16, color: AppColors.textSecondaryLight),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondaryLight,
+                ),
               ),
               const SizedBox(height: 40),
               TextField(
@@ -89,7 +98,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ? const SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       )
                     : const Text('Continue with OTP'),
               ),

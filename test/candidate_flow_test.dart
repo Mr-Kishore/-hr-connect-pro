@@ -9,37 +9,58 @@ void main() {
       repository = MockCandidateRepository();
     });
 
-    test('CF-1: Deduplication detects existing candidate vs new registration', () async {
-      final exists = await repository.checkUserExists('+919876543210');
-      expect(exists, isTrue, reason: 'Registered user must be identified to prevent duplicates');
+    test(
+      'CF-1: Deduplication detects existing candidate vs new registration',
+      () async {
+        final exists = await repository.checkUserExists('+919876543210');
+        expect(
+          exists,
+          isTrue,
+          reason: 'Registered user must be identified to prevent duplicates',
+        );
 
-      final isNew = await repository.checkUserExists('+919111122223');
-      expect(isNew, isFalse, reason: 'Unregistered user must be flagged as new registration');
-    });
+        final isNew = await repository.checkUserExists('+919111122223');
+        expect(
+          isNew,
+          isFalse,
+          reason: 'Unregistered user must be flagged as new registration',
+        );
+      },
+    );
 
     test('CF-2: Resume parser applies Endowed Progress jump and extracts competencies', () async {
-      final profile = await repository.parseResume(fileName: 'Aditya_Resume.pdf');
+      final profile = await repository.parseResume(
+        fileName: 'Aditya_Resume.pdf',
+      );
 
       expect(profile.extractedSkills, isNotEmpty);
       expect(profile.extractedSkills.contains('Flutter'), isTrue);
       expect(profile.extractedSkills.contains('Dart'), isTrue);
-      expect(profile.readinessScore, equals(45), reason: 'Endowed progress leaps to 45% on resume upload');
-    });
-
-    test('CF-3: Role intent updates trajectory and elevates readiness score', () async {
-      final updated = await repository.updateRoleIntent(
-        currentRole: 'Junior Mobile Developer',
-        targetRole: 'Senior Flutter Engineer',
+      expect(
+        profile.readinessScore,
+        equals(45),
+        reason: 'Endowed progress leaps to 45% on resume upload',
       );
-
-      expect(updated.currentRole, 'Junior Mobile Developer');
-      expect(updated.targetRole, 'Senior Flutter Engineer');
-      expect(updated.readinessScore, equals(78));
-      expect(updated.onboardingCompleted, isTrue);
     });
+
+    test(
+      'CF-3: Role intent updates trajectory and elevates readiness score',
+      () async {
+        final updated = await repository.updateRoleIntent(
+          currentRole: 'Junior Mobile Developer',
+          targetRole: 'Senior Flutter Engineer',
+        );
+
+        expect(updated.currentRole, 'Junior Mobile Developer');
+        expect(updated.targetRole, 'Senior Flutter Engineer');
+        expect(updated.readinessScore, equals(78));
+        expect(updated.onboardingCompleted, isTrue);
+      },
+    );
 
     test('CF-4: Disintermediation defense automatically redacts phone numbers in chat', () async {
-      const leakAttempt = 'Connect with me directly at +91 9876543210 to book off-platform';
+      const leakAttempt =
+          'Connect with me directly at +91 9876543210 to book off-platform';
       final message = await repository.sendChatMessage(
         mentorId: 'men_01',
         text: leakAttempt,
@@ -51,8 +72,28 @@ void main() {
       expect(message.safetyNotice, isNotNull);
     });
 
+    test(
+      'CF-4b: Catches evasive spaced and formatted phone number bypasses',
+      () async {
+        final spacedMsg = await repository.sendChatMessage(
+          mentorId: 'men_01',
+          text: 'Ping me on 9 8 7 6 5 4 3 2 1 0 instead',
+        );
+        expect(spacedMsg.isRedacted, isTrue);
+        expect(spacedMsg.text.contains('[Phone Number Redacted]'), isTrue);
+
+        final dashedMsg = await repository.sendChatMessage(
+          mentorId: 'men_01',
+          text: 'Call me at (987) 654-3210',
+        );
+        expect(dashedMsg.isRedacted, isTrue);
+        expect(dashedMsg.text.contains('[Phone Number Redacted]'), isTrue);
+      },
+    );
+
     test('CF-5: Disintermediation defense automatically redacts emails and links in chat', () async {
-      const emailAttempt = 'Send payment receipt to mentor.kavita@google.com or check linkedin.com/in/kavita';
+      const emailAttempt =
+          'Send payment receipt to mentor.kavita@google.com or check linkedin.com/in/kavita';
       final message = await repository.sendChatMessage(
         mentorId: 'men_01',
         text: emailAttempt,
@@ -64,8 +105,23 @@ void main() {
       expect(message.text.contains('[External Link Redacted]'), isTrue);
     });
 
+    test(
+      'CF-5b: Catches obfuscated email notations and calendar scheduling links',
+      () async {
+        final obfuscatedMsg = await repository.sendChatMessage(
+          mentorId: 'men_01',
+          text: 'Reach me at candidate [at] gmail [dot] com or book at calendly.com/candidate',
+        );
+
+        expect(obfuscatedMsg.isRedacted, isTrue);
+        expect(obfuscatedMsg.text.contains('[Email Redacted]'), isTrue);
+        expect(obfuscatedMsg.text.contains('[External Link Redacted]'), isTrue);
+      },
+    );
+
     test('CF-6: Normal compliant technical chat passes through without redaction', () async {
-      const compliantMsg = 'What design pattern do you recommend for offline data sync in Riverpod?';
+      const compliantMsg =
+          'What design pattern do you recommend for offline data sync in Riverpod?';
       final message = await repository.sendChatMessage(
         mentorId: 'men_01',
         text: compliantMsg,
