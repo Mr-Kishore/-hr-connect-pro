@@ -1,5 +1,6 @@
 class ScorecardData {
-  final Map<String, int> competencyScores; // e.g. {'Architecture': 4, 'Problem Solving': 5}
+  final Map<String, int>
+  competencyScores; // e.g. {'Architecture': 4, 'Problem Solving': 5}
   final int overallRating; // 1-5
   final String recommendation; // 'Strong Hire', 'Hire', 'Borderline'
   final String interviewerNotes; // Candidate-facing constructive feedback

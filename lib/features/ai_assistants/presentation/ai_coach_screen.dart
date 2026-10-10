@@ -16,8 +16,7 @@ class _AiCoachScreenState extends ConsumerState<AiCoachScreen> {
   final List<Map<String, String>> _messages = [
     {
       'role': 'assistant',
-      'text':
-          'Hello Aditya! I am your sandboxed AI Career Coach. I can analyze your target job requirements, pinpoint skill gaps, or run an interactive L1 Technical Mock Interview with real-time scorecard evaluation.',
+      'text': 'Hello Aditya! I am your sandboxed AI Career Coach. I can analyze your target job requirements, pinpoint skill gaps, or run an interactive L1 Technical Mock Interview with real-time scorecard evaluation.',
     },
   ];
   bool _isLoading = false;
@@ -46,14 +45,11 @@ class _AiCoachScreenState extends ConsumerState<AiCoachScreen> {
       String reply;
       final lower = text.toLowerCase();
       if (lower.contains('mock') || lower.contains('simulate')) {
-        reply =
-            '🎯 Great choice! Launching the interactive L1 Mock Technical Interview simulator below. You will be evaluated across Architecture Maturity, State Management, and Production Resilience.';
+        reply = '🎯 Great choice! Launching the interactive L1 Mock Technical Interview simulator below. You will be evaluated across Architecture Maturity, State Management, and Production Resilience.';
       } else if (lower.contains('skill gap') || lower.contains('fintech')) {
-        reply =
-            '📊 Fintech Innovations prioritizes: (1) Idempotent transaction handling in offline-first apps, (2) Redlock mutexes for preventing double-tap booking race conditions, and (3) SEC/DPDP data redaction in memory dumps.';
+        reply = '📊 Fintech Innovations prioritizes: (1) Idempotent transaction handling in offline-first apps, (2) Redlock mutexes for preventing double-tap booking race conditions, and (3) SEC/DPDP data redaction in memory dumps.';
       } else {
-        reply =
-            '💡 Tip: When self-booking your interview rounds, choose morning slots between 10:00 AM - 12:00 PM for higher panel engagement. Make sure your GitHub project links in your profile are public!';
+        reply = '💡 Tip: When self-booking your interview rounds, choose morning slots between 10:00 AM - 12:00 PM for higher panel engagement. Make sure your GitHub project links in your profile are public!';
       }
 
       setState(() {
@@ -164,8 +160,7 @@ class _AiCoachScreenState extends ConsumerState<AiCoachScreen> {
                     ),
                     label: const Text('Interview Slot Tips'),
                     onPressed: () => _sendMessage(
-                      predefinedText:
-                          'Give me best practices for self-booking interview rounds.',
+                      predefinedText: 'Give me best practices for self-booking interview rounds.',
                     ),
                   ),
                 ],
@@ -226,7 +221,8 @@ class _AiCoachScreenState extends ConsumerState<AiCoachScreen> {
                   child: TextField(
                     controller: _messageController,
                     decoration: const InputDecoration(
-                      hintText: 'Ask about matches or request mock questions...',
+                      hintText:
+                          'Ask about matches or request mock questions...',
                     ),
                     onSubmitted: (_) => _sendMessage(),
                   ),
@@ -251,7 +247,7 @@ class _AiCoachScreenState extends ConsumerState<AiCoachScreen> {
 class _MockInterviewSimulatorSheet extends StatefulWidget {
   final List<String> questions;
   final Future<Map<String, dynamic>> Function(String question, String answer)
-      onEvaluate;
+  onEvaluate;
 
   const _MockInterviewSimulatorSheet({
     required this.questions,
@@ -309,7 +305,9 @@ class _MockInterviewSimulatorSheetState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: AppColors.accent,
-          content: Text('🎉 L1 Mock Interview completed! Check your scorecard.'),
+          content: Text(
+            '🎉 L1 Mock Interview completed! Check your scorecard.',
+          ),
         ),
       );
     }
@@ -380,8 +378,7 @@ class _MockInterviewSimulatorSheetState
               controller: _answerController,
               maxLines: 4,
               decoration: const InputDecoration(
-                hintText:
-                    'Provide your architectural explanation or coding approach...',
+                hintText: 'Provide your architectural explanation or coding approach...',
                 border: OutlineInputBorder(),
               ),
             ),

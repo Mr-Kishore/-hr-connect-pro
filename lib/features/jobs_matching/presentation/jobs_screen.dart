@@ -81,7 +81,9 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: AppColors.borderLight),
+                      borderSide: const BorderSide(
+                        color: AppColors.borderLight,
+                      ),
                     ),
                   ),
                   onChanged: (val) {
@@ -102,8 +104,9 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
                               .read(jobFilterProvider.notifier)
                               .toggleInstantInterview();
                         },
-                        selectedColor:
-                            AppColors.primary.withValues(alpha: 0.15),
+                        selectedColor: AppColors.primary.withValues(
+                          alpha: 0.15,
+                        ),
                         checkmarkColor: AppColors.primary,
                       ),
                       const SizedBox(width: 8),
@@ -115,8 +118,7 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
                               .read(jobFilterProvider.notifier)
                               .toggleHighMatch();
                         },
-                        selectedColor:
-                            AppColors.accent.withValues(alpha: 0.15),
+                        selectedColor: AppColors.accent.withValues(alpha: 0.15),
                         checkmarkColor: AppColors.accent,
                       ),
                     ],
@@ -218,185 +220,194 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderLight),
-      ),
-      child: InkWell(
-        onTap: () => context.push(RouteConstants.jobDetail, extra: job),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (job.hasInstantInterview) ...[
-                Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.25),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.bolt,
-                        size: 15,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Direct Self-Booking Enabled • $availableSlotsCount slot${availableSlotsCount == 1 ? '' : 's'} open',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      job.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppColors.borderLight),
+        ),
+        child: InkWell(
+          onTap: () => context.push(RouteConstants.jobDetail, extra: job),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (job.hasInstantInterview) ...[
                   Container(
+                    margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
+                      horizontal: 10,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.accent.withValues(alpha: 0.15),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${job.fitScore}% Match',
-                      style: const TextStyle(
-                        color: AppColors.accent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.25),
                       ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.bolt,
+                          size: 15,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Direct Self-Booking Enabled • $availableSlotsCount slot${availableSlotsCount == 1 ? '' : 's'} open',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${job.company} • ${job.location}',
-                style: const TextStyle(
-                  color: AppColors.textSecondaryLight,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                job.salaryRange,
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-              if (job.matchedSkills.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                const Text(
-                  'Matched Skills:',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 4),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: job.matchedSkills
-                      .map(
-                        (s) => Chip(
-                          avatar: const Icon(
-                            Icons.check,
-                            size: 14,
-                            color: AppColors.accent,
-                          ),
-                          label: Text(s, style: const TextStyle(fontSize: 11)),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      )
-                      .toList(),
-                ),
-              ],
-              if (job.missingSkills.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                const Text(
-                  'Identified Skill Gaps:',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.warning,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: job.missingSkills
-                      .map(
-                        (s) => Chip(
-                          avatar: const Icon(
-                            Icons.info_outline,
-                            size: 14,
-                            color: AppColors.warning,
-                          ),
-                          label: Text(s, style: const TextStyle(fontSize: 11)),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      )
-                      .toList(),
-                ),
-              ],
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () =>
-                          context.push(RouteConstants.jobDetail, extra: job),
-                      child: const Text('View JD & Details'),
-                    ),
-                  ),
-                  if (job.hasInstantInterview) ...[
-                    const SizedBox(width: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () =>
-                            context.push(RouteConstants.jobDetail, extra: job),
-                        icon: const Icon(Icons.bolt, size: 16),
-                        label: const Text('Instant Book'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
+                      child: Text(
+                        job.title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.accent.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        '${job.fitScore}% Match',
+                        style: const TextStyle(
+                          color: AppColors.accent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
                         ),
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${job.company} • ${job.location}',
+                  style: const TextStyle(
+                    color: AppColors.textSecondaryLight,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  job.salaryRange,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                if (job.matchedSkills.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Matched Skills:',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: job.matchedSkills
+                        .map(
+                          (s) => Chip(
+                            avatar: const Icon(
+                              Icons.check,
+                              size: 14,
+                              color: AppColors.accent,
+                            ),
+                            label: Text(
+                              s,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ],
-              ),
-            ],
+                if (job.missingSkills.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Identified Skill Gaps:',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.warning,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: job.missingSkills
+                        .map(
+                          (s) => Chip(
+                            avatar: const Icon(
+                              Icons.info_outline,
+                              size: 14,
+                              color: AppColors.warning,
+                            ),
+                            label: Text(
+                              s,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ],
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () =>
+                            context.push(RouteConstants.jobDetail, extra: job),
+                        child: const Text('View JD & Details'),
+                      ),
+                    ),
+                    if (job.hasInstantInterview) ...[
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => context.push(
+                            RouteConstants.jobDetail,
+                            extra: job,
+                          ),
+                          icon: const Icon(Icons.bolt, size: 16),
+                          label: const Text('Instant Book'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 }

@@ -138,8 +138,8 @@ class InterviewsNotifier extends AsyncNotifier<List<InterviewBooking>> {
 
 final interviewsProvider =
     AsyncNotifierProvider<InterviewsNotifier, List<InterviewBooking>>(() {
-  return InterviewsNotifier();
-});
+      return InterviewsNotifier();
+    });
 
 // Expert Marketplace Bookings Provider
 class ExpertBookingsNotifier extends AsyncNotifier<List<ExpertBooking>> {
@@ -171,8 +171,8 @@ class ExpertBookingsNotifier extends AsyncNotifier<List<ExpertBooking>> {
 
 final expertBookingsProvider =
     AsyncNotifierProvider<ExpertBookingsNotifier, List<ExpertBooking>>(() {
-  return ExpertBookingsNotifier();
-});
+      return ExpertBookingsNotifier();
+    });
 
 // Jobs Search & Filter State
 class JobFilterState {
@@ -211,8 +211,9 @@ class JobFilterNotifier extends Notifier<JobFilterState> {
   void reset() => state = const JobFilterState();
 }
 
-final jobFilterProvider =
-    NotifierProvider<JobFilterNotifier, JobFilterState>(() => JobFilterNotifier());
+final jobFilterProvider = NotifierProvider<JobFilterNotifier, JobFilterState>(
+  () => JobFilterNotifier(),
+);
 
 final filteredJobsProvider = Provider<AsyncValue<List<JobOpportunity>>>((ref) {
   final jobsAsync = ref.watch(matchedJobsProvider);
@@ -222,7 +223,8 @@ final filteredJobsProvider = Provider<AsyncValue<List<JobOpportunity>>>((ref) {
     return jobs.where((job) {
       if (filter.searchQuery.isNotEmpty) {
         final query = filter.searchQuery.toLowerCase();
-        final match = job.title.toLowerCase().contains(query) ||
+        final match =
+            job.title.toLowerCase().contains(query) ||
             job.company.toLowerCase().contains(query) ||
             job.matchedSkills.any((s) => s.toLowerCase().contains(query));
         if (!match) return false;
@@ -261,8 +263,7 @@ class DpdpConsentState {
     return DpdpConsentState(
       aiResumeProcessing: aiResumeProcessing ?? this.aiResumeProcessing,
       recruiterDiscovery: recruiterDiscovery ?? this.recruiterDiscovery,
-      sessionDualRecording:
-          sessionDualRecording ?? this.sessionDualRecording,
+      sessionDualRecording: sessionDualRecording ?? this.sessionDualRecording,
       autoSkillBenchmarking:
           autoSkillBenchmarking ?? this.autoSkillBenchmarking,
     );
@@ -279,12 +280,12 @@ class DpdpConsentNotifier extends Notifier<DpdpConsentState> {
       state = state.copyWith(recruiterDiscovery: !state.recruiterDiscovery);
   void toggleSessionRecording() =>
       state = state.copyWith(sessionDualRecording: !state.sessionDualRecording);
-  void toggleSkillBenchmarking() =>
-      state = state.copyWith(autoSkillBenchmarking: !state.autoSkillBenchmarking);
+  void toggleSkillBenchmarking() => state = state.copyWith(
+    autoSkillBenchmarking: !state.autoSkillBenchmarking,
+  );
 }
 
 final dpdpConsentProvider =
     NotifierProvider<DpdpConsentNotifier, DpdpConsentState>(
-  () => DpdpConsentNotifier(),
-);
-
+      () => DpdpConsentNotifier(),
+    );

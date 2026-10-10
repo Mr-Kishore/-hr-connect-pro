@@ -72,7 +72,11 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.verified_outlined, color: AppColors.accent, size: 22),
+                      const Icon(
+                        Icons.verified_outlined,
+                        color: AppColors.accent,
+                        size: 22,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Evaluation Scorecard',
@@ -92,7 +96,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
               ),
               Text(
                 '${interview.company} • ${interview.jobTitle} (${interview.stage})',
-                style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondaryLight,
+                ),
               ),
               const Divider(height: 24),
               Expanded(
@@ -114,7 +121,11 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                             children: [
                               const Text(
                                 'Interviewer Recommendation',
-                                style: TextStyle(fontSize: 11, color: Color(0xFF15803D), fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xFF15803D),
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Text(
@@ -130,7 +141,9 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                           Row(
                             children: List.generate(5, (index) {
                               return Icon(
-                                index < scorecard.overallRating ? Icons.star_rounded : Icons.star_border_rounded,
+                                index < scorecard.overallRating
+                                    ? Icons.star_rounded
+                                    : Icons.star_border_rounded,
                                 color: const Color(0xFFF59E0B),
                                 size: 20,
                               );
@@ -142,7 +155,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                     const SizedBox(height: 18),
                     const Text(
                       'Competency Breakdown',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     ...scorecard.competencyScores.entries.map((entry) {
@@ -154,7 +170,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                               flex: 3,
                               child: Text(
                                 entry.key,
-                                style: const TextStyle(fontSize: 13, color: AppColors.textPrimaryLight),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textPrimaryLight,
+                                ),
                               ),
                             ),
                             Expanded(
@@ -162,7 +181,9 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                               child: LinearProgressIndicator(
                                 value: entry.value / 5.0,
                                 backgroundColor: const Color(0xFFE2E8F0),
-                                valueColor: const AlwaysStoppedAnimation(AppColors.accent),
+                                valueColor: const AlwaysStoppedAnimation(
+                                  AppColors.accent,
+                                ),
                                 minHeight: 6,
                                 borderRadius: BorderRadius.circular(3),
                               ),
@@ -170,7 +191,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                             const SizedBox(width: 10),
                             Text(
                               '${entry.value}/5',
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -179,7 +203,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                     const SizedBox(height: 18),
                     const Text(
                       'Candidate-Facing Feedback Notes',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Container(
@@ -191,14 +218,22 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                       ),
                       child: Text(
                         scorecard.interviewerNotes,
-                        style: const TextStyle(fontSize: 13, height: 1.4, color: AppColors.textPrimaryLight),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          height: 1.4,
+                          color: AppColors.textPrimaryLight,
+                        ),
                       ),
                     ),
                     if (scorecard.strengths.isNotEmpty) ...[
                       const SizedBox(height: 14),
                       const Text(
                         'Observed Strengths',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF15803D)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: Color(0xFF15803D),
+                        ),
                       ),
                       const SizedBox(height: 6),
                       ...scorecard.strengths.map(
@@ -207,10 +242,17 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(Icons.check_circle_outline, size: 14, color: Color(0xFF15803D)),
+                              const Icon(
+                                Icons.check_circle_outline,
+                                size: 14,
+                                color: Color(0xFF15803D),
+                              ),
                               const SizedBox(width: 6),
                               Expanded(
-                                child: Text(s, style: const TextStyle(fontSize: 12)),
+                                child: Text(
+                                  s,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
                               ),
                             ],
                           ),
@@ -221,7 +263,11 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                       const SizedBox(height: 14),
                       const Text(
                         'Key Areas for Further Development',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFFD97706)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: Color(0xFFD97706),
+                        ),
                       ),
                       const SizedBox(height: 6),
                       ...scorecard.areasToImprove.map(
@@ -230,10 +276,17 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(Icons.info_outline, size: 14, color: Color(0xFFD97706)),
+                              const Icon(
+                                Icons.info_outline,
+                                size: 14,
+                                color: Color(0xFFD97706),
+                              ),
                               const SizedBox(width: 6),
                               Expanded(
-                                child: Text(a, style: const TextStyle(fontSize: 12)),
+                                child: Text(
+                                  a,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
                               ),
                             ],
                           ),
@@ -305,13 +358,24 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 12),
-                        const Text('Reason for Rescheduling:', style: TextStyle(fontSize: 12)),
+                        const Text(
+                          'Reason for Rescheduling:',
+                          style: TextStyle(fontSize: 12),
+                        ),
                         const SizedBox(height: 6),
                         DropdownButtonFormField<String>(
                           initialValue: selectedReason,
                           isExpanded: true,
                           items: reasons
-                              .map((r) => DropdownMenuItem(value: r, child: Text(r, style: const TextStyle(fontSize: 12))))
+                              .map(
+                                (r) => DropdownMenuItem(
+                                  value: r,
+                                  child: Text(
+                                    r,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                              )
                               .toList(),
                           onChanged: (val) {
                             if (val != null) {
@@ -322,7 +386,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                         const SizedBox(height: 10),
                         Text(
                           'Notice: You have ${interview.reschedulesLeft} attempts remaining. After this, ${interview.reschedulesLeft - 1} will remain.',
-                          style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondaryLight,
+                          ),
                         ),
                       ],
                     ),
@@ -332,11 +399,15 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                         child: const Text('Cancel'),
                       ),
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accent,
+                        ),
                         onPressed: () async {
                           Navigator.pop(ctx);
                           try {
-                            await ref.read(interviewsProvider.notifier).reschedule(
+                            await ref
+                                .read(interviewsProvider.notifier)
+                                .reschedule(
                                   interviewId: interview.id,
                                   newDateTime: newDateTime,
                                   reason: selectedReason,
@@ -354,7 +425,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                           } catch (e) {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(backgroundColor: AppColors.error, content: Text('Error: $e')),
+                                SnackBar(
+                                  backgroundColor: AppColors.error,
+                                  content: Text('Error: $e'),
+                                ),
                               );
                             }
                           }
@@ -392,12 +466,15 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
       ),
       body: interviewsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Failed to load interviews: $err')),
+        error: (err, _) =>
+            Center(child: Text('Failed to load interviews: $err')),
         data: (interviews) {
-          final activeInterviews =
-              interviews.where((i) => i.status != InterviewStatus.completed).toList();
-          final pastInterviews =
-              interviews.where((i) => i.status == InterviewStatus.completed).toList();
+          final activeInterviews = interviews
+              .where((i) => i.status != InterviewStatus.completed)
+              .toList();
+          final pastInterviews = interviews
+              .where((i) => i.status == InterviewStatus.completed)
+              .toList();
 
           return TabBarView(
             controller: _tabController,
@@ -411,7 +488,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
     );
   }
 
-  Widget _buildInterviewList(List<InterviewBooking> list, {required bool isPast}) {
+  Widget _buildInterviewList(
+    List<InterviewBooking> list, {
+    required bool isPast,
+  }) {
     if (list.isEmpty) {
       return Center(
         child: Padding(
@@ -420,7 +500,9 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                isPast ? Icons.assignment_turned_in_outlined : Icons.calendar_today_outlined,
+                isPast
+                    ? Icons.assignment_turned_in_outlined
+                    : Icons.calendar_today_outlined,
                 size: 56,
                 color: AppColors.textSecondaryLight.withValues(alpha: 0.5),
               ),
@@ -429,7 +511,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                 isPast
                     ? 'No completed interviews yet'
                     : 'No active interviews scheduled right now',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 6),
               Text(
@@ -437,7 +522,10 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                     ? 'Once you complete an interview round, your detailed scorecard and feedback will appear here.'
                     : 'Browse matched jobs and self-book an interview slot directly in just 4 taps.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13, color: AppColors.textSecondaryLight),
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondaryLight,
+                ),
               ),
               if (!isPast) ...[
                 const SizedBox(height: 20),
@@ -467,158 +555,193 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
     );
   }
 
-  Widget _buildInterviewCard(InterviewBooking interview, {required bool isPast}) {
+  Widget _buildInterviewCard(
+    InterviewBooking interview, {
+    required bool isPast,
+  }) {
     final dateStr =
         '${interview.scheduledAt.day}/${interview.scheduledAt.month}/${interview.scheduledAt.year} at ${interview.scheduledAt.hour.toString().padLeft(2, '0')}:${interview.scheduledAt.minute.toString().padLeft(2, '0')} IST';
 
     return RepaintBoundary(
       child: Card(
         elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: AppColors.borderLight),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        interview.company,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: AppColors.borderLight),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          interview.company,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        interview.jobTitle,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondaryLight,
+                        Text(
+                          interview.jobTitle,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textSecondaryLight,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: isPast
-                        ? const Color(0xFFF0FDF4)
-                        : AppColors.info.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    isPast ? 'Completed' : 'Stage ${interview.stageNumber} of ${interview.totalStages}',
-                    style: TextStyle(
-                      color: isPast ? const Color(0xFF15803D) : AppColors.info,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11,
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.psychology_alt_outlined, size: 16, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  Expanded(
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isPast
+                          ? const Color(0xFFF0FDF4)
+                          : AppColors.info.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Text(
-                      'Round: ${interview.stage}',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      isPast
+                          ? 'Completed'
+                          : 'Stage ${interview.stageNumber} of ${interview.totalStages}',
+                      style: TextStyle(
+                        color: isPast
+                            ? const Color(0xFF15803D)
+                            : AppColors.info,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const Icon(Icons.event_outlined, size: 16, color: AppColors.textSecondaryLight),
-                const SizedBox(width: 6),
-                Text(
-                  isPast ? 'Conducted on: $dateStr' : 'Scheduled: $dateStr',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                const Icon(Icons.person_outline, size: 16, color: AppColors.textSecondaryLight),
-                const SizedBox(width: 6),
-                Text(
-                  'Panel: ${interview.interviewerName} (${interview.interviewerRole})',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (isPast) ...[
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0F172A),
-                    minimumSize: const Size(double.infinity, 42),
-                  ),
-                  onPressed: () => _showScorecardModal(context, interview),
-                  icon: const Icon(Icons.assessment_outlined, size: 16),
-                  label: const Text('View Full Scorecard & Hiring Notes'),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.psychology_alt_outlined,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Round: ${interview.stage}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ] else ...[
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 42),
-                      ),
-                      onPressed: interview.reschedulesLeft > 0
-                          ? () => _handleReschedule(interview)
-                          : null,
-                      child: Text(
-                        interview.reschedulesLeft > 0
-                            ? 'Reschedule (${interview.reschedulesLeft} left)'
-                            : 'No reschedules left',
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ),
+                  const Icon(
+                    Icons.event_outlined,
+                    size: 16,
+                    color: AppColors.textSecondaryLight,
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accent,
-                        minimumSize: const Size(0, 42),
-                      ),
-                      onPressed: () => _handleJoinRoom(interview),
-                      icon: const Icon(Icons.video_call_rounded, size: 18),
-                      label: const Text('Join Room', style: TextStyle(fontSize: 13)),
+                  const SizedBox(width: 6),
+                  Text(
+                    isPast ? 'Conducted on: $dateStr' : 'Scheduled: $dateStr',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.person_outline,
+                    size: 16,
+                    color: AppColors.textSecondaryLight,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Panel: ${interview.interviewerName} (${interview.interviewerRole})',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondaryLight,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (isPast) ...[
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0F172A),
+                      minimumSize: const Size(double.infinity, 42),
+                    ),
+                    onPressed: () => _showScorecardModal(context, interview),
+                    icon: const Icon(Icons.assessment_outlined, size: 16),
+                    label: const Text('View Full Scorecard & Hiring Notes'),
+                  ),
+                ),
+              ] else ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 42),
+                        ),
+                        onPressed: interview.reschedulesLeft > 0
+                            ? () => _handleReschedule(interview)
+                            : null,
+                        child: Text(
+                          interview.reschedulesLeft > 0
+                              ? 'Reschedule (${interview.reschedulesLeft} left)'
+                              : 'No reschedules left',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accent,
+                          minimumSize: const Size(0, 42),
+                        ),
+                        onPressed: () => _handleJoinRoom(interview),
+                        icon: const Icon(Icons.video_call_rounded, size: 18),
+                        label: const Text(
+                          'Join Room',
+                          style: TextStyle(fontSize: 13),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
-    ));
+    );
   }
 }

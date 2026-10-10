@@ -16,7 +16,13 @@ class ExpertsScreen extends ConsumerStatefulWidget {
 
 class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
   String _selectedDomain = 'All';
-  final List<String> _domains = ['All', 'System Architecture', 'Leadership', 'Flutter', 'Performance'];
+  final List<String> _domains = [
+    'All',
+    'System Architecture',
+    'Leadership',
+    'Flutter',
+    'Performance',
+  ];
 
   void _handleBookSession(BuildContext context, MentorProfile mentor) async {
     // Conflict check (EXP-07): Check if candidate's target company has a conflict
@@ -39,12 +45,14 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
             children: [
               Icon(Icons.shield_outlined, color: AppColors.error),
               SizedBox(width: 8),
-              Text('Conflict of Interest Guard', style: TextStyle(fontSize: 16)),
+              Text(
+                'Conflict of Interest Guard',
+                style: TextStyle(fontSize: 16),
+              ),
             ],
           ),
           content: Text(
-            conflictResult['conflictReason'] as String? ??
-                'This expert has an active conflict of interest with your target company.',
+            conflictResult['conflictReason'] as String? ?? 'This expert has an active conflict of interest with your target company.',
             style: const TextStyle(fontSize: 13),
           ),
           actions: [
@@ -101,7 +109,11 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.handshake_outlined, color: AppColors.accent, size: 22),
+                          const Icon(
+                            Icons.handshake_outlined,
+                            color: AppColors.accent,
+                            size: 22,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Book Advisory Session',
@@ -121,7 +133,10 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                   ),
                   Text(
                     'Advisor: ${mentor.name} (${mentor.role} @ ${mentor.company})',
-                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondaryLight,
+                    ),
                   ),
                   const Divider(height: 20),
                   Expanded(
@@ -129,23 +144,39 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                       children: [
                         const Text(
                           'Select Advisory Topic:',
-                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         DropdownButtonFormField<String>(
                           initialValue: selectedTopic,
                           isExpanded: true,
                           items: topics
-                              .map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontSize: 12))))
+                              .map(
+                                (t) => DropdownMenuItem(
+                                  value: t,
+                                  child: Text(
+                                    t,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                              )
                               .toList(),
                           onChanged: (val) {
-                            if (val != null) setSheetState(() => selectedTopic = val);
+                            if (val != null) {
+                              setSheetState(() => selectedTopic = val);
+                            }
                           },
                         ),
                         const SizedBox(height: 16),
                         const Text(
                           'Session Slot (Date & Time):',
-                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Row(
@@ -156,13 +187,25 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                                   final d = await showDatePicker(
                                     context: context,
                                     initialDate: selectedDate,
-                                    firstDate: DateTime.now().add(const Duration(days: 1)),
-                                    lastDate: DateTime.now().add(const Duration(days: 14)),
+                                    firstDate: DateTime.now().add(
+                                      const Duration(days: 1),
+                                    ),
+                                    lastDate: DateTime.now().add(
+                                      const Duration(days: 14),
+                                    ),
                                   );
-                                  if (d != null) setSheetState(() => selectedDate = d);
+                                  if (d != null) {
+                                    setSheetState(() => selectedDate = d);
+                                  }
                                 },
-                                icon: const Icon(Icons.calendar_today, size: 14),
-                                label: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}', style: const TextStyle(fontSize: 12)),
+                                icon: const Icon(
+                                  Icons.calendar_today,
+                                  size: 14,
+                                ),
+                                label: Text(
+                                  '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -173,10 +216,15 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                                     context: context,
                                     initialTime: selectedTime,
                                   );
-                                  if (t != null) setSheetState(() => selectedTime = t);
+                                  if (t != null) {
+                                    setSheetState(() => selectedTime = t);
+                                  }
                                 },
                                 icon: const Icon(Icons.access_time, size: 14),
-                                label: Text(selectedTime.format(context), style: const TextStyle(fontSize: 12)),
+                                label: Text(
+                                  selectedTime.format(context),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
                               ),
                             ),
                           ],
@@ -194,40 +242,94 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Payment & Escrow Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                                  Text('RBI Nodal Compliant', style: TextStyle(fontSize: 10, color: AppColors.accent, fontWeight: FontWeight.bold)),
+                                  Text(
+                                    'Payment & Escrow Summary',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  Text(
+                                    'RBI Nodal Compliant',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: AppColors.accent,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text('Session Fee (45 min):', style: TextStyle(fontSize: 12)),
-                                  Text('₹$rate', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                  const Text(
+                                    'Session Fee (45 min):',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  Text(
+                                    '₹$rate',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 4),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text('Platform Fee (20% retained):', style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
-                                  Text('₹$platformFee', style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+                                  const Text(
+                                    'Platform Fee (20% retained):',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textSecondaryLight,
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹$platformFee',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textSecondaryLight,
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 4),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text('Expert Payout (80% settled post-call):', style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
-                                  Text('₹$expertPayout', style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+                                  const Text(
+                                    'Expert Payout (80% settled post-call):',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textSecondaryLight,
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹$expertPayout',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textSecondaryLight,
+                                    ),
+                                  ),
                                 ],
                               ),
                               const Divider(height: 16),
                               const Text(
                                 '• Live 1-on-1 personal service (Apple Guideline 3.1.3d exempt)\n• 100% refund if cancelled >24 hrs prior to session',
-                                style: TextStyle(fontSize: 10, color: AppColors.textSecondaryLight, height: 1.4),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: AppColors.textSecondaryLight,
+                                  height: 1.4,
+                                ),
                               ),
                             ],
                           ),
@@ -236,10 +338,14 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                         CheckboxListTile(
                           contentPadding: EdgeInsets.zero,
                           value: dualConsent,
-                          onChanged: (val) => setSheetState(() => dualConsent = val ?? false),
+                          onChanged: (val) =>
+                              setSheetState(() => dualConsent = val ?? false),
                           title: const Text(
                             'Opt-in to Dual Recording for private candidate playback (DPDP 2023 Consent)',
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -263,7 +369,9 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                       );
 
                       try {
-                        await ref.read(expertBookingsProvider.notifier).bookSession(
+                        await ref
+                            .read(expertBookingsProvider.notifier)
+                            .bookSession(
                               expertId: mentor.id,
                               scheduledAt: scheduledDateTime,
                               durationMinutes: 45,
@@ -284,7 +392,10 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(backgroundColor: AppColors.error, content: Text('Error: $e')),
+                            SnackBar(
+                              backgroundColor: AppColors.error,
+                              content: Text('Error: $e'),
+                            ),
                           );
                         }
                       }
@@ -312,7 +423,9 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
           // Active Bookings Banner (if any)
           bookingsAsync.when(
             data: (bookings) {
-              if (bookings.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+              if (bookings.isEmpty) {
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              }
               return SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -325,7 +438,11 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.alarm_on_rounded, color: AppColors.secondary, size: 24),
+                        const Icon(
+                          Icons.alarm_on_rounded,
+                          color: AppColors.secondary,
+                          size: 24,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -333,11 +450,18 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                             children: [
                               Text(
                                 'Upcoming Session: ${bookings.first.expertName}',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primary),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: AppColors.primary,
+                                ),
                               ),
                               Text(
                                 '${bookings.first.sessionTopic} • ${bookings.first.scheduledAt.day}/${bookings.first.scheduledAt.month}',
-                                style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondaryLight,
+                                ),
                               ),
                             ],
                           ),
@@ -355,9 +479,18 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
                               hourlyRateInr: bookings.first.sessionRateInr,
                               expertise: [bookings.first.sessionTopic],
                             );
-                            context.push(RouteConstants.videoRoom, extra: panelist);
+                            context.push(
+                              RouteConstants.videoRoom,
+                              extra: panelist,
+                            );
                           },
-                          child: const Text('Join Room', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          child: const Text(
+                            'Join Room',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -373,14 +506,25 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
           SliverToBoxAdapter(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
               child: Row(
                 children: _domains.map((domain) {
                   final isSelected = _selectedDomain == domain;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: ChoiceChip(
-                      label: Text(domain, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : AppColors.textPrimaryLight)),
+                      label: Text(
+                        domain,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textPrimaryLight,
+                        ),
+                      ),
                       selected: isSelected,
                       selectedColor: AppColors.primary,
                       onSelected: (selected) {
@@ -399,12 +543,22 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (err, _) => SliverFillRemaining(
-              child: Center(child: Text('Failed to load expert advisors: $err')),
+              child: Center(
+                child: Text('Failed to load expert advisors: $err'),
+              ),
             ),
             data: (mentors) {
               final filteredMentors = _selectedDomain == 'All'
                   ? mentors
-                  : mentors.where((m) => m.expertise.any((e) => e.toLowerCase().contains(_selectedDomain.toLowerCase()))).toList();
+                  : mentors
+                        .where(
+                          (m) => m.expertise.any(
+                            (e) => e.toLowerCase().contains(
+                              _selectedDomain.toLowerCase(),
+                            ),
+                          ),
+                        )
+                        .toList();
 
               if (filteredMentors.isEmpty) {
                 return const SliverFillRemaining(
@@ -434,125 +588,136 @@ class _ExpertsScreenState extends ConsumerState<ExpertsScreen> {
     return RepaintBoundary(
       child: Card(
         elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderLight),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: AppColors.primary,
-                  child: Text(
-                    mentor.name.isNotEmpty ? mentor.name[0] : 'M',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppColors.borderLight),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: AppColors.primary,
+                    child: Text(
+                      mentor.name.isNotEmpty ? mentor.name[0] : 'M',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          mentor.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          '${mentor.role} @ ${mentor.company}',
+                          style: const TextStyle(
+                            color: AppColors.textSecondaryLight,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.star,
+                        color: AppColors.warning,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${mentor.rating}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: mentor.expertise
+                    .map(
+                      (d) => Chip(
+                        label: Text(d, style: const TextStyle(fontSize: 11)),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        mentor.name,
+                        '₹${mentor.hourlyRateInr}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 18,
+                          color: AppColors.primary,
                         ),
                       ),
-                      Text(
-                        '${mentor.role} @ ${mentor.company}',
-                        style: const TextStyle(
+                      const Text(
+                        'per 45m session',
+                        style: TextStyle(
+                          fontSize: 11,
                           color: AppColors.textSecondaryLight,
-                          fontSize: 12,
                         ),
                       ),
                     ],
                   ),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: AppColors.warning, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${mentor.rating}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 6,
-              runSpacing: 4,
-              children: mentor.expertise
-                  .map(
-                    (d) => Chip(
-                      label: Text(d, style: const TextStyle(fontSize: 11)),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  )
-                  .toList(),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '₹${mentor.hourlyRateInr}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: AppColors.primary,
+                  Row(
+                    children: [
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 40),
+                        ),
+                        icon: const Icon(Icons.chat_bubble_outline, size: 16),
+                        label: const Text('Chat'),
+                        onPressed: () => context.push(
+                          RouteConstants.mentorChat,
+                          extra: mentor,
+                        ),
                       ),
-                    ),
-                    const Text(
-                      'per 45m session',
-                      style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 40),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accent,
+                          minimumSize: const Size(0, 40),
+                        ),
+                        icon: const Icon(
+                          Icons.calendar_month_outlined,
+                          size: 16,
+                        ),
+                        label: const Text('Book 1:1'),
+                        onPressed: () => _handleBookSession(context, mentor),
                       ),
-                      icon: const Icon(Icons.chat_bubble_outline, size: 16),
-                      label: const Text('Chat'),
-                      onPressed: () => context.push(
-                        RouteConstants.mentorChat,
-                        extra: mentor,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accent,
-                        minimumSize: const Size(0, 40),
-                      ),
-                      icon: const Icon(Icons.calendar_month_outlined, size: 16),
-                      label: const Text('Book 1:1'),
-                      onPressed: () => _handleBookSession(context, mentor),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 }

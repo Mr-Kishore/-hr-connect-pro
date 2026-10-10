@@ -157,8 +157,7 @@ class MockCandidateRepository implements CandidateRepository {
         scorecard: const ScorecardData(
           overallRating: 4,
           recommendation: 'Strong Hire',
-          interviewerNotes:
-              'Candidate demonstrated exceptional grasp of Riverpod architecture, state immutability, and offline-first resilience. Clear communication when discussing distributed lock tradeoffs.',
+          interviewerNotes: 'Candidate demonstrated exceptional grasp of Riverpod architecture, state immutability, and offline-first resilience. Clear communication when discussing distributed lock tradeoffs.',
           competencyScores: {
             'Clean Architecture': 5,
             'State Management': 5,
@@ -341,7 +340,12 @@ class MockCandidateRepository implements CandidateRepository {
         location: 'Bengaluru (On-site)',
         salaryRange: '₹28 - 38 LPA',
         fitScore: 79,
-        matchedSkills: const ['Flutter', 'RESTful APIs', 'Git', 'Clean Architecture'],
+        matchedSkills: const [
+          'Flutter',
+          'RESTful APIs',
+          'Git',
+          'Clean Architecture',
+        ],
         missingSkills: const [
           'Automated Testing (Widget/Integration)',
           'Kotlin Native Interop',
@@ -378,7 +382,13 @@ class MockCandidateRepository implements CandidateRepository {
         location: 'Gurugram / Remote',
         salaryRange: '₹18 - 25 LPA',
         fitScore: 92,
-        matchedSkills: const ['Flutter', 'Dart', 'Riverpod', 'RESTful APIs', 'Git'],
+        matchedSkills: const [
+          'Flutter',
+          'Dart',
+          'Riverpod',
+          'RESTful APIs',
+          'Git',
+        ],
         missingSkills: const ['WebSocket Streaming'],
         description: 'Build real-time tracking interfaces and quick commerce dispatch workflows.',
         portalUrl: 'https://zomato.com/careers/sde2-flutter',
@@ -628,7 +638,9 @@ class MockCandidateRepository implements CandidateRepository {
     await Future.delayed(const Duration(milliseconds: 300));
     final index = _interviews.indexWhere((i) => i.id == interviewId);
     if (index == -1) {
-      throw const ValidationException(message: 'Interview booking record not found.');
+      throw const ValidationException(
+        message: 'Interview booking record not found.',
+      );
     }
 
     final existing = _interviews[index];
@@ -699,7 +711,8 @@ class MockCandidateRepository implements CandidateRepository {
 
     // Compute escrow & RBI compliance commission split
     final baseRate = expert.hourlyRateInr;
-    final commission = (baseRate * 0.20).round(); // 20% baseline platform commission (BR-05 / BRD §7)
+    final commission = (baseRate * 0.20)
+        .round(); // 20% baseline platform commission (BR-05 / BRD §7)
     final payout = baseRate - commission; // 80% expert payout
 
     final booking = ExpertBooking(
@@ -749,8 +762,7 @@ class MockCandidateRepository implements CandidateRepository {
       return {
         'score': 5.0,
         'rating': 'Needs Elaboration',
-        'critique':
-            'The answer is too brief. Try using the STAR methodology (Situation, Task, Action, Result) with concrete architectural trade-offs.',
+        'critique': 'The answer is too brief. Try using the STAR methodology (Situation, Task, Action, Result) with concrete architectural trade-offs.',
         'keyStrengths': ['Direct answer to prompt'],
         'recommendedAdditions': [
           'Mention edge cases and failure modes',
@@ -762,8 +774,7 @@ class MockCandidateRepository implements CandidateRepository {
     return {
       'score': 8.5,
       'rating': 'Strong Technical Depth',
-      'critique':
-          'Clear conceptual structure and good engineering trade-off rationale. Highlighted resilience, decoupled state handling, and production failure recovery.',
+      'critique': 'Clear conceptual structure and good engineering trade-off rationale. Highlighted resilience, decoupled state handling, and production failure recovery.',
       'keyStrengths': [
         'Demonstrates clean separation of concerns',
         'Accounts for async race conditions and idempotency',

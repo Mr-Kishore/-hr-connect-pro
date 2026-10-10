@@ -435,7 +435,11 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.event_available_rounded, color: AppColors.accent, size: 22),
+                        Icon(
+                          Icons.event_available_rounded,
+                          color: AppColors.accent,
+                          size: 22,
+                        ),
                         SizedBox(width: 8),
                         Text(
                           'Interview Slot Reserved Successfully!',
@@ -451,7 +455,10 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                     Text(
                       'Your Round 1 interview with ${widget.job.company} is confirmed. A meeting link and reminder have been generated.',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondaryLight,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
@@ -492,7 +499,8 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                 ),
               )
             else ...[
-              if (widget.job.hasInstantInterview && widget.job.availableSlots.isNotEmpty)
+              if (widget.job.hasInstantInterview &&
+                  widget.job.availableSlots.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: ElevatedButton.icon(
@@ -505,7 +513,10 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                     icon: const Icon(Icons.calendar_month_outlined, size: 20),
                     label: const Text(
                       'Schedule Interview Slot (Self-Booking)',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
                     ),
                   ),
                 ),
@@ -559,7 +570,11 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.flash_on_rounded, color: AppColors.accent, size: 20),
+                          const Icon(
+                            Icons.flash_on_rounded,
+                            color: AppColors.accent,
+                            size: 20,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'Self-Book Interview Slot',
@@ -588,10 +603,7 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                   const SizedBox(height: 16),
                   const Text(
                     'Select an open slot (Verified Interviewer Calendar):',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 10),
                   Flexible(
@@ -612,11 +624,18 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                           },
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
-                              color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
+                              color: isSelected
+                                  ? const Color(0xFFEFF6FF)
+                                  : const Color(0xFFF8FAFC),
                               border: Border.all(
-                                color: isSelected ? AppColors.secondary : const Color(0xFFE2E8F0),
+                                color: isSelected
+                                    ? AppColors.secondary
+                                    : const Color(0xFFE2E8F0),
                                 width: isSelected ? 1.5 : 1.0,
                               ),
                               borderRadius: BorderRadius.circular(10),
@@ -624,21 +643,28 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                             child: Row(
                               children: [
                                 Icon(
-                                  isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                                  color: isSelected ? AppColors.secondary : AppColors.textSecondaryLight,
+                                  isSelected
+                                      ? Icons.radio_button_checked
+                                      : Icons.radio_button_off,
+                                  color: isSelected
+                                      ? AppColors.secondary
+                                      : AppColors.textSecondaryLight,
                                   size: 18,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         dateStr,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13,
-                                          color: isSelected ? AppColors.primary : AppColors.textPrimaryLight,
+                                          color: isSelected
+                                              ? AppColors.primary
+                                              : AppColors.textPrimaryLight,
                                         ),
                                       ),
                                       Text(
@@ -670,7 +696,9 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                             final messenger = ScaffoldMessenger.of(context);
                             Navigator.pop(context);
                             try {
-                              await ref.read(interviewsProvider.notifier).bookSlot(
+                              await ref
+                                  .read(interviewsProvider.notifier)
+                                  .bookSlot(
                                     jobId: widget.job.id,
                                     slotId: _selectedSlot!.id,
                                     scheduledAt: _selectedSlot!.dateTime,

@@ -11,12 +11,21 @@ void main() {
       repository = MockCandidateRepository();
     });
 
-    test('getInterviews returns initial active and completed interviews', () async {
-      final interviews = await repository.getInterviews();
-      expect(interviews, isNotEmpty);
-      expect(interviews.any((i) => i.status == InterviewStatus.scheduled), isTrue);
-      expect(interviews.any((i) => i.status == InterviewStatus.completed), isTrue);
-    });
+    test(
+      'getInterviews returns initial active and completed interviews',
+      () async {
+        final interviews = await repository.getInterviews();
+        expect(interviews, isNotEmpty);
+        expect(
+          interviews.any((i) => i.status == InterviewStatus.scheduled),
+          isTrue,
+        );
+        expect(
+          interviews.any((i) => i.status == InterviewStatus.completed),
+          isTrue,
+        );
+      },
+    );
 
     test('bookInterviewSlot successfully creates booking and prevents slot conflict', () async {
       final slotTime = DateTime.now().add(const Duration(days: 5, hours: 14));
@@ -46,55 +55,65 @@ void main() {
       );
     });
 
-    test('rescheduleInterview enforces PRD SCH-05 max 2 reschedules rule', () async {
-      final interviews = await repository.getInterviews();
-      final target = interviews.firstWhere((i) => i.status == InterviewStatus.scheduled);
-      expect(target.reschedulesLeft, equals(2));
+    test(
+      'rescheduleInterview enforces PRD SCH-05 max 2 reschedules rule',
+      () async {
+        final interviews = await repository.getInterviews();
+        final target = interviews.firstWhere(
+          (i) => i.status == InterviewStatus.scheduled,
+        );
+        expect(target.reschedulesLeft, equals(2));
 
-      final newTime1 = DateTime.now().add(const Duration(days: 3));
-      final updated1 = await repository.rescheduleInterview(
-        interviewId: target.id,
-        newDateTime: newTime1,
-        reason: 'Client conflict',
-      );
-      expect(updated1.reschedulesLeft, equals(1));
-      expect(updated1.status, equals(InterviewStatus.rescheduled));
-
-      final newTime2 = DateTime.now().add(const Duration(days: 4));
-      final updated2 = await repository.rescheduleInterview(
-        interviewId: target.id,
-        newDateTime: newTime2,
-        reason: 'Personal emergency',
-      );
-      expect(updated2.reschedulesLeft, equals(0));
-
-      // Third reschedule must be blocked per PRD SCH-05
-      final newTime3 = DateTime.now().add(const Duration(days: 5));
-      expect(
-        () => repository.rescheduleInterview(
+        final newTime1 = DateTime.now().add(const Duration(days: 3));
+        final updated1 = await repository.rescheduleInterview(
           interviewId: target.id,
-          newDateTime: newTime3,
-          reason: 'Another change',
-        ),
-        throwsA(
-          predicate((e) =>
-              e is ValidationException &&
-              e.message.contains('Maximum reschedule limit reached')),
-        ),
-      );
-    });
+          newDateTime: newTime1,
+          reason: 'Client conflict',
+        );
+        expect(updated1.reschedulesLeft, equals(1));
+        expect(updated1.status, equals(InterviewStatus.rescheduled));
 
-    test('Scorecard verification contains granular competency breakdown', () async {
-      final interviews = await repository.getInterviews();
-      final completed = interviews.firstWhere((i) => i.scorecard != null);
+        final newTime2 = DateTime.now().add(const Duration(days: 4));
+        final updated2 = await repository.rescheduleInterview(
+          interviewId: target.id,
+          newDateTime: newTime2,
+          reason: 'Personal emergency',
+        );
+        expect(updated2.reschedulesLeft, equals(0));
 
-      expect(completed.scorecard, isNotNull);
-      final scorecard = completed.scorecard!;
-      expect(scorecard.overallRating, inInclusiveRange(1, 5));
-      expect(scorecard.competencyScores, isNotEmpty);
-      expect(scorecard.recommendation, isNotEmpty);
-      expect(scorecard.strengths, isNotEmpty);
-      expect(scorecard.areasToImprove, isNotEmpty);
-    });
+        // Third reschedule must be blocked per PRD SCH-05
+        final newTime3 = DateTime.now().add(const Duration(days: 5));
+        expect(
+          () => repository.rescheduleInterview(
+            interviewId: target.id,
+            newDateTime: newTime3,
+            reason: 'Another change',
+          ),
+          throwsA(
+            predicate(
+              (e) =>
+                  e is ValidationException &&
+                  e.message.contains('Maximum reschedule limit reached'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'Scorecard verification contains granular competency breakdown',
+      () async {
+        final interviews = await repository.getInterviews();
+        final completed = interviews.firstWhere((i) => i.scorecard != null);
+
+        expect(completed.scorecard, isNotNull);
+        final scorecard = completed.scorecard!;
+        expect(scorecard.overallRating, inInclusiveRange(1, 5));
+        expect(scorecard.competencyScores, isNotEmpty);
+        expect(scorecard.recommendation, isNotEmpty);
+        expect(scorecard.strengths, isNotEmpty);
+        expect(scorecard.areasToImprove, isNotEmpty);
+      },
+    );
   });
 }

@@ -33,22 +33,27 @@ void main() {
       expect(safeCheck['conflictReason'], isNull);
     });
 
-    test('Expert booking enforces 20% platform fee and 80% payout split', () async {
-      final scheduledTime = DateTime.now().add(const Duration(days: 3, hours: 10));
+    test(
+      'Expert booking enforces 20% platform fee and 80% payout split',
+      () async {
+        final scheduledTime = DateTime.now().add(
+          const Duration(days: 3, hours: 10),
+        );
 
-      final booking = await repository.bookExpertSession(
-        expertId: 'men_01', // 1500 INR/hr
-        scheduledAt: scheduledTime,
-        durationMinutes: 45,
-        topic: 'System Architecture & Concurrency',
-        consentForRecording: true,
-      );
+        final booking = await repository.bookExpertSession(
+          expertId: 'men_01', // 1500 INR/hr
+          scheduledAt: scheduledTime,
+          durationMinutes: 45,
+          topic: 'System Architecture & Concurrency',
+          consentForRecording: true,
+        );
 
-      expect(booking.sessionRateInr, equals(1500));
-      expect(booking.platformCommissionInr, equals(300)); // 20% of 1500
-      expect(booking.expertPayoutInr, equals(1200)); // 80% of 1500
-      expect(booking.status, equals(ExpertBookingStatus.confirmed));
-      expect(booking.hasDualConsentForRecording, isTrue);
-    });
+        expect(booking.sessionRateInr, equals(1500));
+        expect(booking.platformCommissionInr, equals(300)); // 20% of 1500
+        expect(booking.expertPayoutInr, equals(1200)); // 80% of 1500
+        expect(booking.status, equals(ExpertBookingStatus.confirmed));
+        expect(booking.hasDualConsentForRecording, isTrue);
+      },
+    );
   });
 }

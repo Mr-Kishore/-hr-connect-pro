@@ -134,8 +134,11 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.shield_outlined,
-                          color: AppColors.primary, size: 20),
+                      const Icon(
+                        Icons.shield_outlined,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       const Text(
                         'DPDP Act 2023 Consent Center',
@@ -154,7 +157,8 @@ class ProfileScreen extends ConsumerWidget {
                       fontSize: 12,
                     ),
                   ),
-                  const SizedBox(height: 10),                  SwitchListTile(
+                  const SizedBox(height: 10),
+                  SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     dense: true,
                     title: const Text('AI Resume Parsing & Vectorization'),
@@ -163,21 +167,21 @@ class ProfileScreen extends ConsumerWidget {
                       style: TextStyle(fontSize: 11),
                     ),
                     value: ref.watch(dpdpConsentProvider).aiResumeProcessing,
-                    onChanged: (_) => ref
-                        .read(dpdpConsentProvider.notifier)
-                        .toggleAiResume(),
+                    onChanged: (_) =>
+                        ref.read(dpdpConsentProvider.notifier).toggleAiResume(),
                   ),
                   const Divider(height: 1),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     dense: true,
-                    title: const Text('Direct Recruiter Discovery & Self-Booking'),
+                    title: const Text(
+                      'Direct Recruiter Discovery & Self-Booking',
+                    ),
                     subtitle: const Text(
                       'Allows verified companies to see your profile and offer instant interview slots.',
                       style: TextStyle(fontSize: 11),
                     ),
-                    value:
-                        ref.watch(dpdpConsentProvider).recruiterDiscovery,
+                    value: ref.watch(dpdpConsentProvider).recruiterDiscovery,
                     onChanged: (_) => ref
                         .read(dpdpConsentProvider.notifier)
                         .toggleRecruiterDiscovery(),
@@ -191,9 +195,7 @@ class ProfileScreen extends ConsumerWidget {
                       'Both parties must consent before session audio/video can be transcribed.',
                       style: TextStyle(fontSize: 11),
                     ),
-                    value: ref
-                        .watch(dpdpConsentProvider)
-                        .sessionDualRecording,
+                    value: ref.watch(dpdpConsentProvider).sessionDualRecording,
                     onChanged: (_) => ref
                         .read(dpdpConsentProvider.notifier)
                         .toggleSessionRecording(),
@@ -217,7 +219,9 @@ class ProfileScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.download, color: AppColors.primary),
             title: const Text('Download My Data (DPDP SAR)'),
-            subtitle: const Text('Export all profile records in structured JSON format'),
+            subtitle: const Text(
+              'Export all profile records in structured JSON format',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               final consents = ref.read(dpdpConsentProvider);

@@ -32,6 +32,10 @@ class JobOpportunity {
     this.postedAgo = '2 days ago',
     this.hasInstantInterview = true,
     this.availableSlots = const [],
-    this.interviewRounds = const ['L1 Technical Screening', 'L2 Coding & Problem Solving', 'HR Final'],
+    this.interviewRounds = const [
+      'L1 Technical Screening',
+      'L2 Coding & Problem Solving',
+      'HR Final',
+    ],
   });
 }
