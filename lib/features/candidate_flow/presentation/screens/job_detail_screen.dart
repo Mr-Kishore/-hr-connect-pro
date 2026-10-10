@@ -152,6 +152,7 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final job = widget.job;
+    final isBookmarked = ref.watch(bookmarkedJobsProvider).contains(job.id);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -159,8 +160,27 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
         title: Text(job.company),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bookmark_border_rounded),
-            onPressed: () {},
+            tooltip: isBookmarked ? 'Remove bookmark' : 'Bookmark job',
+            icon: Icon(
+              isBookmarked
+                  ? Icons.bookmark_rounded
+                  : Icons.bookmark_border_rounded,
+              color: isBookmarked ? AppColors.primary : null,
+            ),
+            onPressed: () {
+              ref.read(bookmarkedJobsProvider.notifier).toggleBookmark(job.id);
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  duration: const Duration(milliseconds: 1500),
+                  content: Text(
+                    isBookmarked
+                        ? 'Removed "${job.title}" from saved jobs'
+                        : 'Saved "${job.title}" to bookmarks!',
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

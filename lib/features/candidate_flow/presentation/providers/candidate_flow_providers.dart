@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/candidate_repository.dart';
 import '../../domain/models/candidate_profile.dart';
@@ -174,27 +175,74 @@ final expertBookingsProvider =
       return ExpertBookingsNotifier();
     });
 
+// Bookmarked / Saved Jobs State
+class BookmarkedJobsNotifier extends Notifier<Set<String>> {
+  static const String _storageKey = 'bookmarked_job_ids';
+
+  @override
+  Set<String> build() {
+    loadFromStorage();
+    return const {};
+  }
+
+  Future<Set<String>> loadFromStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final list = prefs.getStringList(_storageKey);
+      if (list != null && list.isNotEmpty) {
+        state = list.toSet();
+      }
+    } catch (_) {}
+    return state;
+  }
+
+  Future<void> toggleBookmark(String jobId) async {
+    final next = Set<String>.from(state);
+    if (next.contains(jobId)) {
+      next.remove(jobId);
+    } else {
+      next.add(jobId);
+    }
+    state = Set.unmodifiable(next);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(_storageKey, next.toList());
+    } catch (_) {}
+  }
+
+  bool isBookmarked(String jobId) => state.contains(jobId);
+}
+
+final bookmarkedJobsProvider =
+    NotifierProvider<BookmarkedJobsNotifier, Set<String>>(() {
+      return BookmarkedJobsNotifier();
+    });
+
 // Jobs Search & Filter State
 class JobFilterState {
   final String searchQuery;
   final bool onlyInstantInterview;
   final bool onlyHighMatch;
+  final bool onlyBookmarked;
 
   const JobFilterState({
     this.searchQuery = '',
     this.onlyInstantInterview = false,
     this.onlyHighMatch = false,
+    this.onlyBookmarked = false,
   });
 
   JobFilterState copyWith({
     String? searchQuery,
     bool? onlyInstantInterview,
     bool? onlyHighMatch,
+    bool? onlyBookmarked,
   }) {
     return JobFilterState(
       searchQuery: searchQuery ?? this.searchQuery,
       onlyInstantInterview: onlyInstantInterview ?? this.onlyInstantInterview,
       onlyHighMatch: onlyHighMatch ?? this.onlyHighMatch,
+      onlyBookmarked: onlyBookmarked ?? this.onlyBookmarked,
     );
   }
 }
@@ -208,6 +256,8 @@ class JobFilterNotifier extends Notifier<JobFilterState> {
       state = state.copyWith(onlyInstantInterview: !state.onlyInstantInterview);
   void toggleHighMatch() =>
       state = state.copyWith(onlyHighMatch: !state.onlyHighMatch);
+  void toggleBookmarked() =>
+      state = state.copyWith(onlyBookmarked: !state.onlyBookmarked);
   void reset() => state = const JobFilterState();
 }
 
@@ -218,6 +268,7 @@ final jobFilterProvider = NotifierProvider<JobFilterNotifier, JobFilterState>(
 final filteredJobsProvider = Provider<AsyncValue<List<JobOpportunity>>>((ref) {
   final jobsAsync = ref.watch(matchedJobsProvider);
   final filter = ref.watch(jobFilterProvider);
+  final bookmarkedIds = ref.watch(bookmarkedJobsProvider);
 
   return jobsAsync.whenData((jobs) {
     return jobs.where((job) {
@@ -233,6 +284,9 @@ final filteredJobsProvider = Provider<AsyncValue<List<JobOpportunity>>>((ref) {
         return false;
       }
       if (filter.onlyHighMatch && job.fitScore < 80) {
+        return false;
+      }
+      if (filter.onlyBookmarked && !bookmarkedIds.contains(job.id)) {
         return false;
       }
       return true;

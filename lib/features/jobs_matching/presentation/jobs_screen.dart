@@ -28,6 +28,7 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
   Widget build(BuildContext context) {
     final filterState = ref.watch(jobFilterProvider);
     final jobsAsync = ref.watch(filteredJobsProvider);
+    final bookmarkedIds = ref.watch(bookmarkedJobsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -96,6 +97,24 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
+                      FilterChip(
+                        label: Text(
+                          bookmarkedIds.isNotEmpty
+                              ? '🔖 Saved (${bookmarkedIds.length})'
+                              : '🔖 Saved',
+                        ),
+                        selected: filterState.onlyBookmarked,
+                        onSelected: (_) {
+                          ref
+                              .read(jobFilterProvider.notifier)
+                              .toggleBookmarked();
+                        },
+                        selectedColor: AppColors.primary.withValues(
+                          alpha: 0.15,
+                        ),
+                        checkmarkColor: AppColors.primary,
+                      ),
+                      const SizedBox(width: 8),
                       FilterChip(
                         label: const Text('⚡ Instant Booking'),
                         selected: filterState.onlyInstantInterview,
@@ -215,6 +234,7 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
     final availableSlotsCount = job.availableSlots
         .where((s) => s.isAvailable)
         .length;
+    final isBookmarked = ref.watch(bookmarkedJobsProvider).contains(job.id);
 
     return RepaintBoundary(
       child: Card(
@@ -278,6 +298,7 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -295,6 +316,40 @@ class _JobsScreenState extends ConsumerState<JobsScreen> {
                           fontSize: 12,
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 4),
+                    IconButton(
+                      iconSize: 22,
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      tooltip: isBookmarked
+                          ? 'Remove bookmark'
+                          : 'Bookmark job',
+                      icon: Icon(
+                        isBookmarked
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_border_rounded,
+                        color: isBookmarked
+                            ? AppColors.primary
+                            : AppColors.textSecondaryLight,
+                      ),
+                      onPressed: () {
+                        ref
+                            .read(bookmarkedJobsProvider.notifier)
+                            .toggleBookmark(job.id);
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(milliseconds: 1200),
+                            content: Text(
+                              isBookmarked
+                                  ? 'Removed "${job.title}" from saved jobs'
+                                  : 'Saved "${job.title}" to bookmarks!',
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
