@@ -660,11 +660,14 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                     color: AppColors.textSecondaryLight,
                   ),
                   const SizedBox(width: 6),
-                  Text(
-                    isPast ? 'Conducted on: $dateStr' : 'Scheduled: $dateStr',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Text(
+                      isPast ? 'Conducted on: $dateStr' : 'Scheduled: $dateStr',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -678,11 +681,14 @@ class _InterviewsScreenState extends ConsumerState<InterviewsScreen>
                     color: AppColors.textSecondaryLight,
                   ),
                   const SizedBox(width: 6),
-                  Text(
-                    'Panel: ${interview.interviewerName} (${interview.interviewerRole})',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondaryLight,
+                  Expanded(
+                    child: Text(
+                      'Panel: ${interview.interviewerName} (${interview.interviewerRole})',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondaryLight,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
