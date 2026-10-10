@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -254,6 +255,8 @@ class StudentDashboardScreen extends ConsumerWidget {
                   height: 160,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
+                    scrollCacheExtent: const ScrollCacheExtent.pixels(120.0),
+                    addAutomaticKeepAlives: false,
                     itemCount: courses.length,
                     separatorBuilder: (_, _) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
@@ -295,15 +298,15 @@ class StudentDashboardScreen extends ConsumerWidget {
 
             jobsAsync.when(
               data: (jobs) {
-                return ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: jobs.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final job = jobs[index];
-                    return _buildJobCard(context, job, index);
-                  },
+                return Column(
+                  children: [
+                    for (int i = 0; i < jobs.length; i++) ...[
+                      if (i > 0) const SizedBox(height: 12),
+                      RepaintBoundary(
+                        child: _buildJobCard(context, jobs[i], i),
+                      ),
+                    ],
+                  ],
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -498,6 +501,6 @@ class StudentDashboardScreen extends ConsumerWidget {
           ],
         ),
       ),
-    ).animate().fadeIn(delay: (index * 80).ms, duration: 300.ms);
+    );
   }
 }

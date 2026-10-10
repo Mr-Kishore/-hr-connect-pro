@@ -6,6 +6,8 @@ import '../../domain/models/job_opportunity.dart';
 import '../../domain/models/recommended_course.dart';
 import '../../domain/models/mentor_profile.dart';
 import '../../domain/models/chat_message.dart';
+import '../../domain/models/interview_booking.dart';
+import '../../domain/models/expert_booking.dart';
 
 final candidateRepositoryProvider = Provider<CandidateRepository>((ref) {
   return MockCandidateRepository();
@@ -83,9 +85,6 @@ class ChatStateNotifier extends Notifier<Map<String, List<ChatMessage>>> {
     if (text.trim().isEmpty) return;
     final repo = ref.read(candidateRepositoryProvider);
     await repo.sendChatMessage(mentorId: mentorId, text: text.trim());
-    // The repository already stored the message, so take a fresh copy of its
-    // history. Appending to a list shared with the repository showed the first
-    // message to each mentor twice.
     state = {
       ...state,
       mentorId: List<ChatMessage>.unmodifiable(repo.getChatHistory(mentorId)),
@@ -97,3 +96,195 @@ final chatStateProvider =
     NotifierProvider<ChatStateNotifier, Map<String, List<ChatMessage>>>(() {
       return ChatStateNotifier();
     });
+
+// Interviews Pipeline Provider
+class InterviewsNotifier extends AsyncNotifier<List<InterviewBooking>> {
+  @override
+  Future<List<InterviewBooking>> build() async {
+    final repo = ref.read(candidateRepositoryProvider);
+    return await repo.getInterviews();
+  }
+
+  Future<InterviewBooking> bookSlot({
+    required String jobId,
+    required String slotId,
+    required DateTime scheduledAt,
+  }) async {
+    final repo = ref.read(candidateRepositoryProvider);
+    final booking = await repo.bookInterviewSlot(
+      jobId: jobId,
+      slotId: slotId,
+      scheduledAt: scheduledAt,
+    );
+    state = AsyncData(await repo.getInterviews());
+    return booking;
+  }
+
+  Future<InterviewBooking> reschedule({
+    required String interviewId,
+    required DateTime newDateTime,
+    required String reason,
+  }) async {
+    final repo = ref.read(candidateRepositoryProvider);
+    final updated = await repo.rescheduleInterview(
+      interviewId: interviewId,
+      newDateTime: newDateTime,
+      reason: reason,
+    );
+    state = AsyncData(await repo.getInterviews());
+    return updated;
+  }
+}
+
+final interviewsProvider =
+    AsyncNotifierProvider<InterviewsNotifier, List<InterviewBooking>>(() {
+  return InterviewsNotifier();
+});
+
+// Expert Marketplace Bookings Provider
+class ExpertBookingsNotifier extends AsyncNotifier<List<ExpertBooking>> {
+  @override
+  Future<List<ExpertBooking>> build() async {
+    final repo = ref.read(candidateRepositoryProvider);
+    return await repo.getExpertBookings();
+  }
+
+  Future<ExpertBooking> bookSession({
+    required String expertId,
+    required DateTime scheduledAt,
+    required int durationMinutes,
+    required String topic,
+    bool consentForRecording = false,
+  }) async {
+    final repo = ref.read(candidateRepositoryProvider);
+    final booking = await repo.bookExpertSession(
+      expertId: expertId,
+      scheduledAt: scheduledAt,
+      durationMinutes: durationMinutes,
+      topic: topic,
+      consentForRecording: consentForRecording,
+    );
+    state = AsyncData(await repo.getExpertBookings());
+    return booking;
+  }
+}
+
+final expertBookingsProvider =
+    AsyncNotifierProvider<ExpertBookingsNotifier, List<ExpertBooking>>(() {
+  return ExpertBookingsNotifier();
+});
+
+// Jobs Search & Filter State
+class JobFilterState {
+  final String searchQuery;
+  final bool onlyInstantInterview;
+  final bool onlyHighMatch;
+
+  const JobFilterState({
+    this.searchQuery = '',
+    this.onlyInstantInterview = false,
+    this.onlyHighMatch = false,
+  });
+
+  JobFilterState copyWith({
+    String? searchQuery,
+    bool? onlyInstantInterview,
+    bool? onlyHighMatch,
+  }) {
+    return JobFilterState(
+      searchQuery: searchQuery ?? this.searchQuery,
+      onlyInstantInterview: onlyInstantInterview ?? this.onlyInstantInterview,
+      onlyHighMatch: onlyHighMatch ?? this.onlyHighMatch,
+    );
+  }
+}
+
+class JobFilterNotifier extends Notifier<JobFilterState> {
+  @override
+  JobFilterState build() => const JobFilterState();
+
+  void setSearchQuery(String q) => state = state.copyWith(searchQuery: q);
+  void toggleInstantInterview() =>
+      state = state.copyWith(onlyInstantInterview: !state.onlyInstantInterview);
+  void toggleHighMatch() =>
+      state = state.copyWith(onlyHighMatch: !state.onlyHighMatch);
+  void reset() => state = const JobFilterState();
+}
+
+final jobFilterProvider =
+    NotifierProvider<JobFilterNotifier, JobFilterState>(() => JobFilterNotifier());
+
+final filteredJobsProvider = Provider<AsyncValue<List<JobOpportunity>>>((ref) {
+  final jobsAsync = ref.watch(matchedJobsProvider);
+  final filter = ref.watch(jobFilterProvider);
+
+  return jobsAsync.whenData((jobs) {
+    return jobs.where((job) {
+      if (filter.searchQuery.isNotEmpty) {
+        final query = filter.searchQuery.toLowerCase();
+        final match = job.title.toLowerCase().contains(query) ||
+            job.company.toLowerCase().contains(query) ||
+            job.matchedSkills.any((s) => s.toLowerCase().contains(query));
+        if (!match) return false;
+      }
+      if (filter.onlyInstantInterview && !job.hasInstantInterview) {
+        return false;
+      }
+      if (filter.onlyHighMatch && job.fitScore < 80) {
+        return false;
+      }
+      return true;
+    }).toList();
+  });
+});
+
+// DPDP Act 2023 Consent Management State
+class DpdpConsentState {
+  final bool aiResumeProcessing;
+  final bool recruiterDiscovery;
+  final bool sessionDualRecording;
+  final bool autoSkillBenchmarking;
+
+  const DpdpConsentState({
+    this.aiResumeProcessing = true,
+    this.recruiterDiscovery = true,
+    this.sessionDualRecording = false,
+    this.autoSkillBenchmarking = true,
+  });
+
+  DpdpConsentState copyWith({
+    bool? aiResumeProcessing,
+    bool? recruiterDiscovery,
+    bool? sessionDualRecording,
+    bool? autoSkillBenchmarking,
+  }) {
+    return DpdpConsentState(
+      aiResumeProcessing: aiResumeProcessing ?? this.aiResumeProcessing,
+      recruiterDiscovery: recruiterDiscovery ?? this.recruiterDiscovery,
+      sessionDualRecording:
+          sessionDualRecording ?? this.sessionDualRecording,
+      autoSkillBenchmarking:
+          autoSkillBenchmarking ?? this.autoSkillBenchmarking,
+    );
+  }
+}
+
+class DpdpConsentNotifier extends Notifier<DpdpConsentState> {
+  @override
+  DpdpConsentState build() => const DpdpConsentState();
+
+  void toggleAiResume() =>
+      state = state.copyWith(aiResumeProcessing: !state.aiResumeProcessing);
+  void toggleRecruiterDiscovery() =>
+      state = state.copyWith(recruiterDiscovery: !state.recruiterDiscovery);
+  void toggleSessionRecording() =>
+      state = state.copyWith(sessionDualRecording: !state.sessionDualRecording);
+  void toggleSkillBenchmarking() =>
+      state = state.copyWith(autoSkillBenchmarking: !state.autoSkillBenchmarking);
+}
+
+final dpdpConsentProvider =
+    NotifierProvider<DpdpConsentNotifier, DpdpConsentState>(
+  () => DpdpConsentNotifier(),
+);
+

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -68,15 +67,15 @@ class MentorConnectScreen extends ConsumerWidget {
 
             mentorsAsync.when(
               data: (mentors) {
-                return ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: mentors.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 14),
-                  itemBuilder: (context, index) {
-                    final mentor = mentors[index];
-                    return _buildMentorCard(context, mentor, index);
-                  },
+                return Column(
+                  children: [
+                    for (int i = 0; i < mentors.length; i++) ...[
+                      if (i > 0) const SizedBox(height: 14),
+                      RepaintBoundary(
+                        child: _buildMentorCard(context, mentors[i], i),
+                      ),
+                    ],
+                  ],
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -265,6 +264,6 @@ class MentorConnectScreen extends ConsumerWidget {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: (index * 70).ms, duration: 300.ms);
+    );
   }
 }

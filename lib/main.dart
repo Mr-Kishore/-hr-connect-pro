@@ -6,9 +6,15 @@ import 'app/config/environment.dart';
 import 'app/routes/app_router.dart';
 import 'app/theme/app_theme.dart';
 import 'core/services/device_security_service.dart';
+import 'core/services/low_memory_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize engine memory bounds (image cache capped at 20MB / 60 items)
+  // and listen for Android OS low-memory trim signals
+  LowMemoryManager.instance.initialize();
+
   AppEnvironment.initialize(EnvironmentType.dev);
 
   // Proactively assess device integrity against tampering (root/jailbreak/debugger)

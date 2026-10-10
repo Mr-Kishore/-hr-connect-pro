@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../app/routes/route_constants.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../domain/models/job_opportunity.dart';
+import '../../domain/models/interview_booking.dart';
+import '../providers/candidate_flow_providers.dart';
 
-class JobDetailScreen extends StatefulWidget {
+class JobDetailScreen extends ConsumerStatefulWidget {
   final JobOpportunity job;
 
   const JobDetailScreen({super.key, required this.job});
 
   @override
-  State<JobDetailScreen> createState() => _JobDetailScreenState();
+  ConsumerState<JobDetailScreen> createState() => _JobDetailScreenState();
 }
 
-class _JobDetailScreenState extends State<JobDetailScreen> {
+class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
   bool _isApplied = false;
+  bool _isBooked = false;
+  InterviewSlot? _selectedSlot;
 
   void _handleDirectApply() {
     setState(() => _isApplied = true);
@@ -414,7 +421,52 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             const SizedBox(height: 40),
 
             // Apply CTA Actions
-            if (_isApplied)
+            if (_isBooked)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF86EFAC)),
+                ),
+                child: Column(
+                  children: [
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.event_available_rounded, color: AppColors.accent, size: 22),
+                        SizedBox(width: 8),
+                        Text(
+                          'Interview Slot Reserved Successfully!',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.accent,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Your Round 1 interview with ${widget.job.company} is confirmed. A meeting link and reminder have been generated.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        minimumSize: const Size(double.infinity, 40),
+                      ),
+                      onPressed: () => context.go(RouteConstants.interviews),
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+                      label: const Text('View in My Interviews Hub'),
+                    ),
+                  ],
+                ),
+              )
+            else if (_isApplied)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -439,7 +491,24 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   ],
                 ),
               )
-            else
+            else ...[
+              if (widget.job.hasInstantInterview && widget.job.availableSlots.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    onPressed: _openScheduleModal,
+                    icon: const Icon(Icons.calendar_month_outlined, size: 20),
+                    label: const Text(
+                      'Schedule Interview Slot (Self-Booking)',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ),
+                ),
               Row(
                 children: [
                   Expanded(
@@ -457,9 +526,183 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   ),
                 ],
               ),
+            ],
           ],
         ),
       ),
+    );
+  }
+
+  void _openScheduleModal() {
+    final slots = widget.job.availableSlots;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              padding: const EdgeInsets.all(20),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.75,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.flash_on_rounded, color: AppColors.accent, size: 20),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Self-Book Interview Slot',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimaryLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Company: ${widget.job.company} • Round 1: ${widget.job.interviewRounds.first}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondaryLight,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Select an open slot (Verified Interviewer Calendar):',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Flexible(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: slots.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        final slot = slots[index];
+                        final isSelected = _selectedSlot?.id == slot.id;
+                        final dateStr =
+                            '${slot.dateTime.day}/${slot.dateTime.month}/${slot.dateTime.year} at ${slot.dateTime.hour.toString().padLeft(2, '0')}:${slot.dateTime.minute.toString().padLeft(2, '0')} IST';
+
+                        return InkWell(
+                          onTap: () {
+                            setModalState(() => _selectedSlot = slot);
+                            setState(() => _selectedSlot = slot);
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
+                              border: Border.all(
+                                color: isSelected ? AppColors.secondary : const Color(0xFFE2E8F0),
+                                width: isSelected ? 1.5 : 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                                  color: isSelected ? AppColors.secondary : AppColors.textSecondaryLight,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        dateStr,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: isSelected ? AppColors.primary : AppColors.textPrimaryLight,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Interviewer: ${slot.interviewerName} (${slot.durationMinutes}m)',
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: AppColors.textSecondaryLight,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accent,
+                      minimumSize: const Size(double.infinity, 46),
+                    ),
+                    onPressed: _selectedSlot == null
+                        ? null
+                        : () async {
+                            final messenger = ScaffoldMessenger.of(context);
+                            Navigator.pop(context);
+                            try {
+                              await ref.read(interviewsProvider.notifier).bookSlot(
+                                    jobId: widget.job.id,
+                                    slotId: _selectedSlot!.id,
+                                    scheduledAt: _selectedSlot!.dateTime,
+                                  );
+                              if (mounted) {
+                                setState(() => _isBooked = true);
+                              }
+                              messenger.showSnackBar(
+                                SnackBar(
+                                  backgroundColor: AppColors.accent,
+                                  content: Text(
+                                    'Slot Confirmed with ${widget.job.company}! Added to your interview pipeline.',
+                                  ),
+                                ),
+                              );
+                            } catch (e) {
+                              messenger.showSnackBar(
+                                SnackBar(
+                                  backgroundColor: AppColors.error,
+                                  content: Text('Booking error: $e'),
+                                ),
+                              );
+                            }
+                          },
+                    child: const Text('Confirm Interview Reservation'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

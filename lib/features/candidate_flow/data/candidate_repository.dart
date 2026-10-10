@@ -5,6 +5,9 @@ import '../domain/models/job_opportunity.dart';
 import '../domain/models/recommended_course.dart';
 import '../domain/models/mentor_profile.dart';
 import '../domain/models/chat_message.dart';
+import '../domain/models/interview_booking.dart';
+import '../domain/models/expert_booking.dart';
+import '../../../core/errors/app_exception.dart';
 
 abstract class CandidateRepository {
   Future<bool> checkUserExists(String phone);
@@ -22,6 +25,44 @@ abstract class CandidateRepository {
     required String text,
   });
   List<ChatMessage> getChatHistory(String mentorId);
+
+  // Phase 1 & 2: Interviews Pipeline & Scheduling
+  Future<List<InterviewBooking>> getInterviews();
+  Future<InterviewBooking> bookInterviewSlot({
+    required String jobId,
+    required String slotId,
+    required DateTime scheduledAt,
+  });
+  Future<InterviewBooking> rescheduleInterview({
+    required String interviewId,
+    required DateTime newDateTime,
+    required String reason,
+  });
+
+  // Phase 1: Expert Marketplace & Escrow
+  Future<List<ExpertBooking>> getExpertBookings();
+  Future<ExpertBooking> bookExpertSession({
+    required String expertId,
+    required DateTime scheduledAt,
+    required int durationMinutes,
+    required String topic,
+    bool consentForRecording = false,
+  });
+  Future<Map<String, dynamic>> checkExpertConflict({
+    required String expertId,
+    required String targetCompany,
+  });
+
+  // Phase 1: AI Assistant & Mock Interview Simulator
+  Future<List<String>> generateMockInterviewQuestions({
+    required String role,
+    required List<String> focusSkills,
+    required String stage,
+  });
+  Future<Map<String, dynamic>> evaluateMockAnswer({
+    required String question,
+    required String candidateAnswer,
+  });
 }
 
 class MockCandidateRepository implements CandidateRepository {
@@ -49,9 +90,13 @@ class MockCandidateRepository implements CandidateRepository {
 
   CandidateProfile? _currentProfile;
   final Map<String, List<ChatMessage>> _chatHistories = {};
+  late final List<InterviewBooking> _interviews;
+  late final List<ExpertBooking> _expertBookings;
 
   MockCandidateRepository() {
     _initializeDefaultChats();
+    _initializeDefaultInterviews();
+    _initializeDefaultExpertBookings();
   }
 
   void _initializeDefaultChats() {
@@ -62,6 +107,93 @@ class MockCandidateRepository implements CandidateRepository {
         text: 'Hello! I noticed you are preparing for Senior Mobile roles. Feel free to ask any technical or architecture questions.',
         timestamp: DateTime.now().subtract(const Duration(hours: 2)),
         isFromCandidate: false,
+      ),
+    ];
+  }
+
+  void _initializeDefaultInterviews() {
+    _interviews = [
+      InterviewBooking(
+        id: 'int_01',
+        jobId: 'job_01',
+        jobTitle: 'Senior Flutter Engineer',
+        company: 'Fintech Innovations',
+        stage: 'L1 Technical Screening',
+        stageNumber: 1,
+        totalStages: 3,
+        interviewerName: 'Priya Sundaram (Technical Panel)',
+        interviewerRole: 'Staff Engineer & Interviewer',
+        scheduledAt: DateTime.now().add(const Duration(days: 2, hours: 3)),
+        status: InterviewStatus.scheduled,
+        reschedulesLeft: 2,
+      ),
+      InterviewBooking(
+        id: 'int_02',
+        jobId: 'job_03',
+        jobTitle: 'Mobile SDE-2',
+        company: 'Zomato',
+        stage: 'L2 Coding & Problem Solving',
+        stageNumber: 2,
+        totalStages: 3,
+        interviewerName: 'Arjun Rao',
+        interviewerRole: 'Senior Engineering Manager',
+        scheduledAt: DateTime.now().add(const Duration(days: 5, hours: 1)),
+        status: InterviewStatus.scheduled,
+        reschedulesLeft: 1,
+      ),
+      InterviewBooking(
+        id: 'int_03',
+        jobId: 'job_legacy',
+        jobTitle: 'Senior Frontend Engineer',
+        company: 'Swiggy',
+        stage: 'L1 Technical Screening',
+        stageNumber: 1,
+        totalStages: 3,
+        interviewerName: 'Karthik Raja',
+        interviewerRole: 'Staff Mobile Architect',
+        scheduledAt: DateTime.now().subtract(const Duration(days: 3)),
+        status: InterviewStatus.completed,
+        reschedulesLeft: 0,
+        scorecard: const ScorecardData(
+          overallRating: 4,
+          recommendation: 'Strong Hire',
+          interviewerNotes:
+              'Candidate demonstrated exceptional grasp of Riverpod architecture, state immutability, and offline-first resilience. Clear communication when discussing distributed lock tradeoffs.',
+          competencyScores: {
+            'Clean Architecture': 5,
+            'State Management': 5,
+            'API Resilience': 4,
+            'System Design': 4,
+          },
+          strengths: [
+            'Deep understanding of reactive state models',
+            'Production experience with SSL Pinning and mobile security',
+          ],
+          areasToImprove: [
+            'Brush up on GraphQL schema federations',
+            'Practice Kotlin / Swift native platform channels',
+          ],
+        ),
+      ),
+    ];
+  }
+
+  void _initializeDefaultExpertBookings() {
+    _expertBookings = [
+      ExpertBooking(
+        id: 'exp_book_01',
+        expertId: 'men_01',
+        expertName: 'Kavita Menon',
+        expertRole: 'Staff Mobile Engineer',
+        expertCompany: 'Google',
+        scheduledAt: DateTime.now().add(const Duration(days: 1, hours: 4)),
+        durationMinutes: 45,
+        sessionRateInr: 1500,
+        platformCommissionInr: 300,
+        expertPayoutInr: 1200,
+        status: ExpertBookingStatus.confirmed,
+        sessionTopic: 'Senior Mobile System Architecture & Concurrency',
+        hasDualConsentForRecording: true,
       ),
     ];
   }
@@ -155,7 +287,8 @@ class MockCandidateRepository implements CandidateRepository {
   @override
   Future<List<JobOpportunity>> getMatchedJobs() async {
     await Future.delayed(const Duration(milliseconds: 350));
-    return const [
+    final now = DateTime.now();
+    return [
       JobOpportunity(
         id: 'job_01',
         title: 'Senior Flutter Engineer',
@@ -163,17 +296,43 @@ class MockCandidateRepository implements CandidateRepository {
         location: 'Bengaluru (Hybrid)',
         salaryRange: '₹22 - 30 LPA',
         fitScore: 84,
-        matchedSkills: [
+        matchedSkills: const [
           'Flutter',
           'Dart',
           'State Management',
           'Clean Architecture',
         ],
-        missingSkills: ['GraphQL', 'CI/CD Pipelines'],
+        missingSkills: const ['GraphQL', 'CI/CD Pipelines'],
         description: 'Lead mobile development for high-throughput payment SDKs and checkout flows.',
         portalUrl: 'https://razorpay.com/careers/mobile-lead',
         isDirectApply: true,
         postedAgo: 'Just now',
+        hasInstantInterview: true,
+        availableSlots: [
+          InterviewSlot(
+            id: 'slot_rzp_1',
+            dateTime: DateTime(now.year, now.month, now.day + 1, 10, 0),
+            interviewerName: 'Priya Sundaram (Lead Mobile Architect)',
+            durationMinutes: 45,
+          ),
+          InterviewSlot(
+            id: 'slot_rzp_2',
+            dateTime: DateTime(now.year, now.month, now.day + 1, 14, 30),
+            interviewerName: 'Priya Sundaram (Lead Mobile Architect)',
+            durationMinutes: 45,
+          ),
+          InterviewSlot(
+            id: 'slot_rzp_3',
+            dateTime: DateTime(now.year, now.month, now.day + 2, 11, 0),
+            interviewerName: 'Priya Sundaram (Lead Mobile Architect)',
+            durationMinutes: 45,
+          ),
+        ],
+        interviewRounds: const [
+          'L1 Technical Screening',
+          'L2 Architecture & Problem Solving',
+          'HR & Compensation Round',
+        ],
       ),
       JobOpportunity(
         id: 'job_02',
@@ -182,8 +341,8 @@ class MockCandidateRepository implements CandidateRepository {
         location: 'Bengaluru (On-site)',
         salaryRange: '₹28 - 38 LPA',
         fitScore: 79,
-        matchedSkills: ['Flutter', 'RESTful APIs', 'Git', 'Clean Architecture'],
-        missingSkills: [
+        matchedSkills: const ['Flutter', 'RESTful APIs', 'Git', 'Clean Architecture'],
+        missingSkills: const [
           'Automated Testing (Widget/Integration)',
           'Kotlin Native Interop',
         ],
@@ -191,6 +350,26 @@ class MockCandidateRepository implements CandidateRepository {
         portalUrl: 'https://flipkartcareers.com/job/lead-mobile',
         isDirectApply: false,
         postedAgo: '1 day ago',
+        hasInstantInterview: true,
+        availableSlots: [
+          InterviewSlot(
+            id: 'slot_fk_1',
+            dateTime: DateTime(now.year, now.month, now.day + 2, 11, 0),
+            interviewerName: 'Vikram Malhotra (Staff Director)',
+            durationMinutes: 60,
+          ),
+          InterviewSlot(
+            id: 'slot_fk_2',
+            dateTime: DateTime(now.year, now.month, now.day + 3, 15, 0),
+            interviewerName: 'Vikram Malhotra (Staff Director)',
+            durationMinutes: 60,
+          ),
+        ],
+        interviewRounds: const [
+          'L1 System Architecture',
+          'L2 Coding Simulation',
+          'Bar Raiser Leadership',
+        ],
       ),
       JobOpportunity(
         id: 'job_03',
@@ -199,12 +378,32 @@ class MockCandidateRepository implements CandidateRepository {
         location: 'Gurugram / Remote',
         salaryRange: '₹18 - 25 LPA',
         fitScore: 92,
-        matchedSkills: ['Flutter', 'Dart', 'Riverpod', 'RESTful APIs', 'Git'],
-        missingSkills: ['WebSocket Streaming'],
+        matchedSkills: const ['Flutter', 'Dart', 'Riverpod', 'RESTful APIs', 'Git'],
+        missingSkills: const ['WebSocket Streaming'],
         description: 'Build real-time tracking interfaces and quick commerce dispatch workflows.',
         portalUrl: 'https://zomato.com/careers/sde2-flutter',
         isDirectApply: true,
         postedAgo: '3 days ago',
+        hasInstantInterview: true,
+        availableSlots: [
+          InterviewSlot(
+            id: 'slot_zom_1',
+            dateTime: DateTime(now.year, now.month, now.day + 1, 16, 0),
+            interviewerName: 'Arjun Rao (Senior Manager)',
+            durationMinutes: 45,
+          ),
+          InterviewSlot(
+            id: 'slot_zom_2',
+            dateTime: DateTime(now.year, now.month, now.day + 2, 10, 30),
+            interviewerName: 'Arjun Rao (Senior Manager)',
+            durationMinutes: 45,
+          ),
+        ],
+        interviewRounds: const [
+          'L1 Live Problem Solving',
+          'L2 Real-Time Dispatch System Design',
+          'Culture Fit',
+        ],
       ),
     ];
   }
@@ -363,5 +562,216 @@ class MockCandidateRepository implements CandidateRepository {
   @override
   List<ChatMessage> getChatHistory(String mentorId) {
     return _chatHistories[mentorId] ?? [];
+  }
+
+  @override
+  Future<List<InterviewBooking>> getInterviews() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return List.unmodifiable(_interviews);
+  }
+
+  @override
+  Future<InterviewBooking> bookInterviewSlot({
+    required String jobId,
+    required String slotId,
+    required DateTime scheduledAt,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final jobs = await getMatchedJobs();
+    final matchedJob = jobs.firstWhere(
+      (j) => j.id == jobId,
+      orElse: () => jobs.first,
+    );
+
+    // Conflict prevention check: Check if slot is already reserved
+    final conflict = _interviews.any(
+      (i) =>
+          i.scheduledAt.year == scheduledAt.year &&
+          i.scheduledAt.month == scheduledAt.month &&
+          i.scheduledAt.day == scheduledAt.day &&
+          i.scheduledAt.hour == scheduledAt.hour &&
+          i.status == InterviewStatus.scheduled,
+    );
+    if (conflict) {
+      throw const SlotConflictException(
+        message: 'The selected slot conflicts with an existing confirmed interview in your schedule.',
+      );
+    }
+
+    final newBooking = InterviewBooking(
+      id: 'int_${DateTime.now().millisecondsSinceEpoch}',
+      jobId: matchedJob.id,
+      jobTitle: matchedJob.title,
+      company: matchedJob.company,
+      stage: matchedJob.interviewRounds.isNotEmpty
+          ? matchedJob.interviewRounds.first
+          : 'L1 Technical Screening',
+      stageNumber: 1,
+      totalStages: matchedJob.interviewRounds.length,
+      interviewerName: 'Panel Lead (${matchedJob.company})',
+      interviewerRole: 'Senior Technical Lead',
+      scheduledAt: scheduledAt,
+      status: InterviewStatus.scheduled,
+      reschedulesLeft: 2,
+    );
+
+    _interviews.insert(0, newBooking);
+    return newBooking;
+  }
+
+  @override
+  Future<InterviewBooking> rescheduleInterview({
+    required String interviewId,
+    required DateTime newDateTime,
+    required String reason,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _interviews.indexWhere((i) => i.id == interviewId);
+    if (index == -1) {
+      throw const ValidationException(message: 'Interview booking record not found.');
+    }
+
+    final existing = _interviews[index];
+    if (existing.reschedulesLeft <= 0) {
+      throw const ValidationException(
+        message: 'Maximum reschedule limit reached (2 attempts per round per PRD SCH-05). Please contact Talent HR.',
+      );
+    }
+
+    final updated = existing.copyWith(
+      scheduledAt: newDateTime,
+      status: InterviewStatus.rescheduled,
+      reschedulesLeft: existing.reschedulesLeft - 1,
+    );
+
+    _interviews[index] = updated;
+    return updated;
+  }
+
+  @override
+  Future<List<ExpertBooking>> getExpertBookings() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return List.unmodifiable(_expertBookings);
+  }
+
+  @override
+  Future<Map<String, dynamic>> checkExpertConflict({
+    required String expertId,
+    required String targetCompany,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 150));
+    final mentors = await getMentors();
+    final expert = mentors.firstWhere(
+      (m) => m.id == expertId,
+      orElse: () => mentors.first,
+    );
+
+    final normalizedTarget = targetCompany.toLowerCase().trim();
+    final normalizedExpertCompany = expert.company.toLowerCase().trim();
+
+    if (normalizedTarget.isNotEmpty &&
+        (normalizedExpertCompany.contains(normalizedTarget) ||
+            normalizedTarget.contains(normalizedExpertCompany))) {
+      return {
+        'hasConflict': true,
+        'conflictReason':
+            'Active Conflict of Interest (BR-07 / EXP-07): ${expert.name} is currently an active, verified employee at ${expert.company}. Under platform fair-hiring rules, experts cannot provide paid coaching for hiring loops at their active employer.',
+      };
+    }
+
+    return {'hasConflict': false, 'conflictReason': null};
+  }
+
+  @override
+  Future<ExpertBooking> bookExpertSession({
+    required String expertId,
+    required DateTime scheduledAt,
+    required int durationMinutes,
+    required String topic,
+    bool consentForRecording = false,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 350));
+    final mentors = await getMentors();
+    final expert = mentors.firstWhere(
+      (m) => m.id == expertId,
+      orElse: () => mentors.first,
+    );
+
+    // Compute escrow & RBI compliance commission split
+    final baseRate = expert.hourlyRateInr;
+    final commission = (baseRate * 0.20).round(); // 20% baseline platform commission (BR-05 / BRD §7)
+    final payout = baseRate - commission; // 80% expert payout
+
+    final booking = ExpertBooking(
+      id: 'exp_book_${DateTime.now().millisecondsSinceEpoch}',
+      expertId: expert.id,
+      expertName: expert.name,
+      expertRole: expert.role,
+      expertCompany: expert.company,
+      scheduledAt: scheduledAt,
+      durationMinutes: durationMinutes,
+      sessionRateInr: baseRate,
+      platformCommissionInr: commission,
+      expertPayoutInr: payout,
+      status: ExpertBookingStatus.confirmed,
+      sessionTopic: topic,
+      hasDualConsentForRecording: consentForRecording,
+    );
+
+    _expertBookings.insert(0, booking);
+    return booking;
+  }
+
+  @override
+  Future<List<String>> generateMockInterviewQuestions({
+    required String role,
+    required List<String> focusSkills,
+    required String stage,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    return [
+      'In a high-throughput mobile application, how do you handle state re-computation and cache invalidation across distributed async providers?',
+      'Describe how you would design an offline-first sync mechanism that guarantees zero data loss during network disruptions and avoids duplicate writes.',
+      'How does certificate pinning protect against Man-in-the-Middle (MitM) attacks, and what zero-downtime rotation strategy would you deploy when certificates approach expiry (RFC 7469)?',
+      'Explain how you profile and eliminate frame drops (jank) in Flutter widget render pipelines with complex nested lists and animations.',
+      'Walk through how you would architect an idempotent interview slot reservation flow using distributed Redis locks to prevent double-booking race conditions.',
+    ];
+  }
+
+  @override
+  Future<Map<String, dynamic>> evaluateMockAnswer({
+    required String question,
+    required String candidateAnswer,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final trimmed = candidateAnswer.trim();
+    if (trimmed.length < 20) {
+      return {
+        'score': 5.0,
+        'rating': 'Needs Elaboration',
+        'critique':
+            'The answer is too brief. Try using the STAR methodology (Situation, Task, Action, Result) with concrete architectural trade-offs.',
+        'keyStrengths': ['Direct answer to prompt'],
+        'recommendedAdditions': [
+          'Mention edge cases and failure modes',
+          'Discuss performance implications and telemetry',
+        ],
+      };
+    }
+
+    return {
+      'score': 8.5,
+      'rating': 'Strong Technical Depth',
+      'critique':
+          'Clear conceptual structure and good engineering trade-off rationale. Highlighted resilience, decoupled state handling, and production failure recovery.',
+      'keyStrengths': [
+        'Demonstrates clean separation of concerns',
+        'Accounts for async race conditions and idempotency',
+      ],
+      'recommendedAdditions': [
+        'Mention automated widget/integration regression testing strategies',
+        'Discuss telemetry metrics (P99 latency, crash-free rates)',
+      ],
+    };
   }
 }
